@@ -8,7 +8,7 @@
 static bool check_word_list(struct wordle *wordle)
 {
   for (unsigned i = 0; i < wordle->nr_word; ++i) {
-    for (unsigned j = 0; j < WORD_LEN; ++j) {
+    for (unsigned j = 0; j < wordle->len; ++j) {
       char c = wordle->words[i][j];
       if (c < 'a' || c > 'z') {
         return false;
@@ -18,17 +18,18 @@ static bool check_word_list(struct wordle *wordle)
   return true;
 }
 
-bool wordle_init(struct wordle *wordle, const char **words, unsigned nr_word)
+bool wordle_init(struct wordle *wordle, const char **words, unsigned len, unsigned nr_word)
 {
   memset(wordle, 0, sizeof(*wordle));
   wordle->nr_word = nr_word;
   wordle->words = words;
+  wordle->len = len;
   return check_word_list(wordle);
 }
 
 void update_status(struct wordle *wordle)
 {
-  for (unsigned i = 0; i < WORD_LEN; ++i) {
+  for (unsigned i = 0; i < wordle->len; ++i) {
     unsigned c = wordle->candidate[i] - 'a';
 
     switch (wordle->current[i]) {
@@ -53,7 +54,7 @@ bool word_is_valid(struct wordle *wordle, const char *word)
 {
   unsigned i = 0;
 
-  for (i = 0; i < WORD_LEN; ++i) {
+  for (i = 0; i < wordle->len; ++i) {
     unsigned c = word[i] - 'a';
     if (wordle->right[i] != 0) {
       if (wordle->right[i] != word[i]) {
@@ -70,7 +71,7 @@ bool word_is_valid(struct wordle *wordle, const char *word)
   for (i = 0; i < ALPHA_SZ; ++i) {
     if (wordle->wrong[i] == true) {
       bool in = false;
-      for (unsigned j = 0; j < WORD_LEN; ++j) {
+      for (unsigned j = 0; j < wordle->len; ++j) {
         unsigned c = word[j] - 'a';
         if (c == i) {
           in = true;

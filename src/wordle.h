@@ -4,8 +4,7 @@
 #include <stdbool.h>
 
 #define ALPHA_SZ 26
-#define NR_MAX_ROUND 6
-#define WORD_LEN 5
+#define MAX_WORD_LEN 10
 
 enum status {
   UNKNOWN,
@@ -15,13 +14,14 @@ enum status {
 };
 
 struct wordle {
+  unsigned len;
   unsigned nr_word;
   const char **words;
-  char candidate[WORD_LEN];
-  enum status current[WORD_LEN];
-  char right[WORD_LEN];
+  char candidate[MAX_WORD_LEN];
+  enum status current[MAX_WORD_LEN];
+  char right[MAX_WORD_LEN];
   bool wrong[ALPHA_SZ];
-  bool wrong_location[ALPHA_SZ][WORD_LEN];
+  bool wrong_location[ALPHA_SZ][MAX_WORD_LEN];
   bool discarded[ALPHA_SZ];
 };
 
@@ -42,7 +42,7 @@ void update_status(struct wordle *wordle);
  * Initialize and chck if the list of words is valid:
  * only contains [a-z] characters.
 */
-bool wordle_init(struct wordle *wordle, const char **words, unsigned nr_word);
+bool wordle_init(struct wordle *wordle, const char **words, unsigned len, unsigned nr_word);
 
 /**
  * Invalid the word if:

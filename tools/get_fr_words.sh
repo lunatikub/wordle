@@ -29,12 +29,13 @@ convert_list_to_c_file()
 {
     local list=$1
     local h_file=$2
+    local len=$3
 
     nr_word=$(wc -l $list | cut -d' ' -f1)
-    echo "static const unsigned nr_word_5 = $nr_word;"  > $h_file
+    echo "static const unsigned nr_word_$len = $nr_word;"  > $h_file
     echo "" >> $h_file
 
-    echo  "static const char *words_5[] = {" >> $h_file
+    echo  "static const char *words_${len}[] = {" >> $h_file
     n=0
     for w in $(cat $list)
     do
@@ -53,7 +54,7 @@ do
     h_file=$SRC_DIR/fr_words_$len.h
     echo $list -> $h_file
     generate_list $len $list
-    convert_list_to_c_file $list $h_file
+    convert_list_to_c_file $list $h_file $len
 done
 
 rm -rf $WORDS

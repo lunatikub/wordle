@@ -14,24 +14,25 @@ static void set_discarded(struct wordle *wordle, char *discarded, unsigned nr_di
 
 static void set_right_location(struct wordle *wordle, char *right)
 {
-  for (unsigned i = 0; i < WORD_LEN; ++i) {
+  for (unsigned i = 0; i < wordle->len; ++i) {
     wordle->right[i] = right[i];
   }
 }
 
 static void set_wrong_location(struct wordle *wordle, bool *wrong,
-                               bool wrong_location[ALPHA_SZ][WORD_LEN])
+                               bool wrong_location[ALPHA_SZ][5])
 {
   for (unsigned i = 0; i < ALPHA_SZ; ++i) {
     wordle->wrong[i] = wrong[i];
-    memcpy(wordle->wrong_location[i], wrong_location[i], WORD_LEN);
+    memcpy(wordle->wrong_location[i], wrong_location[i], wordle->len);
   }
 }
 
 TEST_F(word_is_valid, conte)
 {
   struct wordle wordle;
-  if (wordle_init(&wordle, words_5, nr_word_5) == false) {
+  if (wordle_init(&wordle, words_5, 5, nr_word_5) == false) {
+    printf("TOTO\n");
     return false;
   }
   char discarded[5] = { 'a', 'e', 'i', 'l', 'r' };
@@ -44,16 +45,16 @@ TEST_F(word_is_valid, conte)
 TEST_F(word_is_valid, sueur)
 {
   struct wordle wordle;
-  if (wordle_init(&wordle, words_5, nr_word_5) == false) {
+  if (wordle_init(&wordle, words_5, 5, nr_word_5) == false) {
     return false;
   }
   char discarded[] = { 'a', 'b', 'e', 'i', 'l', 't'};
   set_discarded(&wordle, discarded, sizeof(discarded));
-  char right[WORD_LEN] = { 0, 0, 0, 0, 'r' };
+  char right[5] = { 0, 0, 0, 0, 'r' };
   set_right_location(&wordle, right);
   bool wrong[ALPHA_SZ] = { false };
   wrong['e' - 'a'] = true;
-  bool wrong_location[ALPHA_SZ][WORD_LEN];
+  bool wrong_location[ALPHA_SZ][5];
   wrong_location['e' - 'a'][0] = false;
   wrong_location['e' - 'a'][1] = true;
   wrong_location['e' - 'a'][2] = false;
