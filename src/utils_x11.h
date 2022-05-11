@@ -25,7 +25,7 @@ struct color {
  * Return true if approximalty the both colors are the same.
  * Otherwise return false.
  **/
-bool color_approx_eq(struct color *c1, struct color *c2);
+bool color_approx_eq(const struct color *c1, const struct color *c2);
 
 struct utils_x11 {
   Display *display;
@@ -68,21 +68,21 @@ void utils_x11_write(struct utils_x11 *x11, const char *word, unsigned len);
  * If found return with output `coord`.
  * Browse the image horizontally then vertically untils limits.
  */
-bool utils_x11_find_color_from(struct utils_x11 *x11, struct coord *from,
-                               struct coord *coord, struct color *color);
+bool utils_x11_find_from(struct utils_x11 *x11, struct coord *from,
+                         struct coord *coord, const struct color *color);
 
 /**
  * Try to find an existing `color` from `from` coordinates.
  * If found return with output `coord`.
  * Browse the image horizontally until limits.
  */
-bool utils_x11_find_horizontal_color_from(struct utils_x11 *x11, struct coord *from,
-                                          struct coord *coord, struct color *color);
+bool utils_x11_find_h_from(struct utils_x11 *x11, struct coord *from,
+                           struct coord *coord, const struct color *color);
 
 /**
  * Try to find an existing `color` from `from` coordinates.
  * If found return with output `coord`.
  * Browse the image verticaly until limits.
  */
-bool utils_x11_find_vertical_color_from(struct utils_x11 *x11, struct coord *from,
-                                        struct coord *coord, struct color *color);
+bool utils_x11_find_v_from(struct utils_x11 *x11, struct coord *from,
+                           struct coord *coord, const struct color *color);

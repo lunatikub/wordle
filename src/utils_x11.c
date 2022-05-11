@@ -75,8 +75,8 @@ void utils_x11_write(struct utils_x11 *x11, const char *word, unsigned len)
   utils_x11_press_key(x11, 36); // return
 }
 
-bool utils_x11_find_color_from(struct utils_x11 *x11, struct coord *from,
-                               struct coord *coord, struct color *color)
+bool utils_x11_find_from(struct utils_x11 *x11, struct coord *from,
+                         struct coord *coord, const struct color *color)
 {
   struct color current;
 
@@ -92,8 +92,8 @@ bool utils_x11_find_color_from(struct utils_x11 *x11, struct coord *from,
   return false;
 }
 
-bool utils_x11_find_horizontal_color_from(struct utils_x11 *x11, struct coord *from,
-                                          struct coord *coord, struct color *color)
+bool utils_x11_find_h_from(struct utils_x11 *x11, struct coord *from,
+                           struct coord *coord, const struct color *color)
 {
   struct color current;
   for (unsigned x = from->x; x < x11->width; ++x) {
@@ -106,8 +106,8 @@ bool utils_x11_find_horizontal_color_from(struct utils_x11 *x11, struct coord *f
   return false;
 }
 
-bool utils_x11_find_vertical_color_from(struct utils_x11 *x11, struct coord *from,
-                                        struct coord *coord, struct color *color)
+bool utils_x11_find_v_from(struct utils_x11 *x11, struct coord *from,
+                           struct coord *coord, const struct color *color)
 {
   struct color current;
   for (unsigned y = from->y; y < x11->height; ++y) {
@@ -126,7 +126,7 @@ void coord_set(struct coord *c, int x, int y)
   c->y = y;
 }
 
-bool color_approx_eq(struct color *c1, struct color *c2)
+bool color_approx_eq(const struct color *c1, const struct color *c2)
 {
 #define LOCAL_APPROX 10
 #define TOTAL_APPROX 20

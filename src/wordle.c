@@ -36,11 +36,11 @@ void update_status(struct wordle *wordle)
       case DISCARDED:
         wordle->discarded[c] = true;
         break;
-      case RIGHT_LOCATION:
+      case RIGHT:
         wordle->wrong[c] = false;
         wordle->right[i] = wordle->candidate[i];
         break;
-      case WRONG_LOCATION:
+      case WRONG:
         wordle->wrong[c] = true;
         wordle->wrong_location[c][i] = true;
         break;

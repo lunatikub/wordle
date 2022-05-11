@@ -9,8 +9,8 @@
 enum status {
   UNKNOWN,
   DISCARDED,
-  WRONG_LOCATION,
-  RIGHT_LOCATION,
+  WRONG,
+  RIGHT,
 };
 
 struct wordle {
