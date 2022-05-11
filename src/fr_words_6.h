@@ -1,6 +1,6 @@
-static const unsigned nr_word_5 = 17991;
+static const unsigned nr_word_6 = 17991;
 
-static const char *words_5[] = {
+static const char *words_6[] = {
   "abacas", "abales", "abaque", "abasie", "abatee", "abatis", "abatte", "abattu", 
   "abbaye", "abceda", "abcede", "abelia", "abelie", "aberra", "aberre", "abetie", 
   "abetir", "abetis", "abetit", "abimai", "abimas", "abimat", "abimee", "abimer", 
