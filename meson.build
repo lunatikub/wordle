@@ -42,6 +42,8 @@ test_inc = include_directories('tests')
 src = files(
   'src/wordle.c',
   'src/dump.c',
+  'src/bot.c',
+  'src/utils_x11.c',
 )
 
 cc = meson.get_compiler('c')
@@ -53,7 +55,7 @@ subdir('tests')
 executable(
   'bot_wordle',
   src,
-  'src/bot_wordle.c',
+  'app/wordle.c',
   include_directories: inc,
   c_args: flags,
   dependencies : [ x11, x11_test ],
