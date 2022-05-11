@@ -53,9 +53,9 @@ x11_test = dependency('xtst', required: false, disabler: true)
 subdir('tests')
 
 executable(
-  'wordle',
+  'wordle_louan',
   src,
-  'app/wordle.c',
+  'app/wordle_louan.c',
   include_directories: inc,
   c_args: flags,
   dependencies : [ x11, x11_test ],
