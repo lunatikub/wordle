@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 
 #include "utils_x11.h"
@@ -92,8 +93,8 @@ bool utils_x11_find_from(struct utils_x11 *x11, struct coord *from,
   return false;
 }
 
-bool utils_x11_find_h_from(struct utils_x11 *x11, struct coord *from,
-                           struct coord *coord, const struct color *color)
+bool utils_x11_find_h_inc_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color)
 {
   struct color current;
   for (unsigned x = from->x; x < x11->width; ++x) {
@@ -106,11 +107,39 @@ bool utils_x11_find_h_from(struct utils_x11 *x11, struct coord *from,
   return false;
 }
 
-bool utils_x11_find_v_from(struct utils_x11 *x11, struct coord *from,
-                           struct coord *coord, const struct color *color)
+bool utils_x11_find_h_dec_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color)
+{
+  struct color current;
+  for (int x = from->x; x >= 0; --x) {
+    utils_x11_color_get(x11, x, from->y, &current);
+    if (color_approx_eq(&current, color) == true) {
+      coord_set(coord, x, from->y);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool utils_x11_find_v_inc_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color)
 {
   struct color current;
   for (unsigned y = from->y; y < x11->height; ++y) {
+    utils_x11_color_get(x11, from->x, y, &current);
+    if (color_approx_eq(&current, color) == true) {
+      coord_set(coord, from->x, y);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color)
+{
+  struct color current;
+  for (int y = from->y; y >= 0; --y) {
     utils_x11_color_get(x11, from->x, y, &current);
     if (color_approx_eq(&current, color) == true) {
       coord_set(coord, from->x, y);
@@ -126,23 +155,12 @@ void coord_set(struct coord *c, int x, int y)
   c->y = y;
 }
 
-bool color_approx_eq(const struct color *c1, const struct color *c2)
+void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time)
 {
-#define LOCAL_APPROX 10
-#define TOTAL_APPROX 20
-
-  int diff_r = abs(c1->r - c2->r);
-  int diff_g = abs(c1->g - c2->g);
-  int diff_b = abs(c1->b - c2->b);
-
-  if (diff_r > LOCAL_APPROX ||
-      diff_g > LOCAL_APPROX ||
-      diff_b > LOCAL_APPROX) {
-    return false;
+  for (unsigned i = 0; i < waiting_time; ++i) {
+    printf("[x] %u/%u...", i + 1, waiting_time);
+    sleep(1);
   }
-
-  return (diff_r + diff_g + diff_b) < TOTAL_APPROX;
-
-#undef LOCAL_APPROX
-#undef TOTAL_APPROX
+  *coord = utils_x11_get_mouse_coordinates(x11);
+  utils_x11_image_refresh(x11);
 }

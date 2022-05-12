@@ -40,9 +40,10 @@ inc = include_directories('src')
 test_inc = include_directories('tests')
 
 src = files(
+  'src/color.c',
+  'src/words.c',
   'src/wordle.c',
   'src/dump.c',
-  'src/bot.c',
   'src/utils_x11.c',
 )
 
@@ -53,9 +54,9 @@ x11_test = dependency('xtst', required: false, disabler: true)
 subdir('tests')
 
 executable(
-  'wordle_louan',
+  'louan',
   src,
-  'app/wordle_louan.c',
+  'app/louan.c',
   include_directories: inc,
   c_args: flags,
   dependencies : [ x11, x11_test ],

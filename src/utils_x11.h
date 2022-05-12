@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "color.h"
+
 /* Coordinates of a location. */
 struct coord {
   int x;
@@ -13,19 +15,6 @@ struct coord {
 
 /* Set coordinates from inouts x and y. */
 void coord_set(struct coord *c, int x, int y);
-
-/* RGB */
-struct color {
-  int r;
-  int g;
-  int b;
-};
-
-/**
- * Return true if approximalty the both colors are the same.
- * Otherwise return false.
- **/
-bool color_approx_eq(const struct color *c1, const struct color *c2);
 
 struct utils_x11 {
   Display *display;
@@ -72,17 +61,34 @@ bool utils_x11_find_from(struct utils_x11 *x11, struct coord *from,
                          struct coord *coord, const struct color *color);
 
 /**
- * Try to find an existing `color` from `from` coordinates.
- * If found return with output `coord`.
- * Browse the image horizontally until limits.
+ * Try to find an existing pixel `color` from `from` coordinates.
+ * Browse the image horizontally until limits by increment x coordinate.
  */
-bool utils_x11_find_h_from(struct utils_x11 *x11, struct coord *from,
-                           struct coord *coord, const struct color *color);
+bool utils_x11_find_h_inc_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color);
 
 /**
- * Try to find an existing `color` from `from` coordinates.
- * If found return with output `coord`.
- * Browse the image verticaly until limits.
+ * Try to find an existing pixel `color` from `from` coordinates.
+ * Browse the image horizontally until limits by decrement x coordinate.
  */
-bool utils_x11_find_v_from(struct utils_x11 *x11, struct coord *from,
-                           struct coord *coord, const struct color *color);
+bool utils_x11_find_h_dec_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color);
+
+/**
+ * Try to find an existing pixel `color` from `from` coordinates.
+ * Browse the image verticaly until limits by increment y coordinate.
+ */
+bool utils_x11_find_v_inc_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color);
+
+/**
+ * Try to find an existing pixel `color` from `from` coordinates.
+ * Browse the image verticaly until limits by decrement y coordinate.
+ */
+bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
+                               struct coord *coord, const struct color *color);
+
+/**
+ * Asking user to set the focus on the screen and the coordinates of the mouse.
+ */
+void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time);
