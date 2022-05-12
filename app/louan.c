@@ -144,7 +144,7 @@ static bool louan_get_locations_status(struct louan *l, unsigned round)
   }
   printf("\n");
   if (right_location == l->words.len) {
-    printf(" <<<<<< WIN >>>>>>\n");
+    printf("[louan] <<<<<< WIN >>>>>>\n");
     return true;
   }
   return false;
