@@ -1,3 +1,6 @@
+#ifndef __UTILS_X11__
+#define __UTILS_X11__
+
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xutil.h>
@@ -6,15 +9,7 @@
 #include <stdlib.h>
 
 #include "color.h"
-
-/* Coordinates of a location. */
-struct coord {
-  int x;
-  int y;
-};
-
-/* Set coordinates from inouts x and y. */
-void coord_set(struct coord *c, int x, int y);
+#include "coord.h"
 
 struct utils_x11 {
   Display *display;
@@ -92,3 +87,5 @@ bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
  * Asking user to set the focus on the screen and the coordinates of the mouse.
  */
 void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time);
+
+#endif /* !__UTILS_X11__ */

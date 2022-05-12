@@ -43,6 +43,7 @@ src = files(
   'src/color.c',
   'src/words.c',
   'src/wordle.c',
+  'src/coord.c',
   'src/dump.c',
   'src/utils_x11.c',
 )

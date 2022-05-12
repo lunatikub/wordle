@@ -149,16 +149,10 @@ bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
   return false;
 }
 
-void coord_set(struct coord *c, int x, int y)
-{
-  c->x = x;
-  c->y = y;
-}
-
 void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time)
 {
   for (unsigned i = 0; i < waiting_time; ++i) {
-    printf("[x] %u/%u...", i + 1, waiting_time);
+    printf("[x] %u/%u...\n", i + 1, waiting_time);
     sleep(1);
   }
   *coord = utils_x11_get_mouse_coordinates(x11);

@@ -59,7 +59,7 @@ static bool louan_set_locations(struct louan *louan)
   struct coord coord;
 
   printf("[louan] set the focus (by clicking) on the tabulation...\n");
-  printf("and be closest to the top left corner of the first location...\n");
+  printf("[louan] and be closest to the top left corner of the first location...\n");
   utils_x11_focus(&louan->x11, &start_loc, 3);
 
   if (utils_x11_find_from(&louan->x11, &start_loc, &louan->first_loc, &c_first_loc) == false) {
@@ -82,9 +82,9 @@ static bool louan_set_locations(struct louan *louan)
   louan->first_loc.x += MARGIN;
   louan->first_loc.y += MARGIN;
 
-  printf("first location coordinates: (x:%u,y:%u)\n", louan->first_loc.x, louan->first_loc.y);
-  printf("x location size: %u\n", louan->width_sz);
-  printf("y location size: %u\n", louan->height_sz);
+  printf("[louan] first location coordinates: (x:%u,y:%u)\n", louan->first_loc.x, louan->first_loc.y);
+  printf("[louan] x location size: %u\n", louan->width_sz);
+  printf("[louan] y location size: %u\n", louan->height_sz);
 
   return true;
 }
@@ -130,7 +130,7 @@ static bool louan_get_locations_status(struct louan *l, unsigned round)
   struct color color;
   unsigned right_location = 0;
 
-  printf("[bot] {round:%u} ", round + 1);
+  printf("[louan] {round:%u} ", round + 1);
   for (unsigned i = 0; i < l->words.len; ++i) {
     louan_get_location(l, round, i, &coord);
     utils_x11_color_get(&l->x11, coord.x, coord.y, &color);
@@ -154,7 +154,7 @@ static const char* louan_find_next_candidate(struct louan *l, unsigned round)
 {
   const char *next_candidate = NULL;
   wordle_update_status(&l->wordle);
-  wordle_dump_status(&l->wordle, round + 1, "bot");
+  wordle_dump_status(&l->wordle, round + 1);
   next_candidate = wordle_find_next_candidate(&l->wordle);
   assert(next_candidate != NULL);
   return next_candidate;

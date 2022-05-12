@@ -2,9 +2,9 @@
 
 #include "wordle.h"
 
-static void dump_discarded(struct wordle *wordle, unsigned round, const char *prefix)
+static void dump_discarded(struct wordle *wordle, unsigned round)
 {
-  printf("[%s] {round:%u} discarded: { ", prefix, round);
+  printf("[wordle] {round:%u} discarded: { ", round);
   for (unsigned i = 0; i < ALPHA_SZ; ++i) {
     if (wordle->discarded[i] == true) {
       printf("%c,", i + 'a');
@@ -13,9 +13,9 @@ static void dump_discarded(struct wordle *wordle, unsigned round, const char *pr
   printf(" }\n");
 }
 
-static void dump_wrong_location(struct wordle *wordle, unsigned round, const char *prefix)
+static void dump_wrong_location(struct wordle *wordle, unsigned round)
 {
-  printf("[%s] {round:%u} wrong location: { ", prefix, round);
+  printf("[wordle] {round:%u} wrong location: { ", round);
   for (unsigned i = 0; i < ALPHA_SZ; ++i) {
     if (wordle->wrong[i] == true) {
       printf("%c:[", i + 'a');
@@ -28,18 +28,18 @@ static void dump_wrong_location(struct wordle *wordle, unsigned round, const cha
   printf(" }\n");
 }
 
-static void dump_right_location(struct wordle *wordle, unsigned round, const char *prefix)
+static void dump_right_location(struct wordle *wordle, unsigned round)
 {
-  printf("[%s] {round:%u} right location: { ", prefix, round);
+  printf("[wordle] {round:%u} right location: { ", round);
   for (unsigned i = 0; i < wordle->words->len; ++i) {
     printf("%c,", wordle->right[i] == 0  ? '_' : wordle->right[i]);
   }
   printf(" }\n");
 }
 
-void wordle_dump_status(struct wordle *wordle, unsigned round, const char *prefix)
+void wordle_dump_status(struct wordle *wordle, unsigned round)
 {
-  dump_discarded(wordle, round, prefix);
-  dump_wrong_location(wordle, round, prefix);
-  dump_right_location(wordle, round, prefix);
+  dump_discarded(wordle, round);
+  dump_wrong_location(wordle, round);
+  dump_right_location(wordle, round);
 }

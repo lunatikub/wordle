@@ -95,7 +95,7 @@ unsigned wordle_count_number_of_candidates(struct wordle *wordle)
 
 void wordle_set_candidate(struct wordle *wordle, const char *candidate)
 {
-  printf("[wordle] set next candidate: %s", candidate);
+  printf("[wordle] set next candidate: %s\n", candidate);
   memcpy(wordle->candidate, candidate, wordle->words->len);
 }
 

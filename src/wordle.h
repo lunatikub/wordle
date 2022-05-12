@@ -78,6 +78,6 @@ enum status wordle_map_from_color(struct color *color,
  *  + wrong character locations.
  *  + right character locations.
  */
-void wordle_dump_status(struct wordle *wordle, unsigned round, const char *prefix);
+void wordle_dump_status(struct wordle *wordle, unsigned round);
 
 #endif /* !__WORDLE__ */
