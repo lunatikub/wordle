@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "fr_words_5.h"
+#include "wordle_louan_fr_5_words.h"
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"
@@ -98,8 +98,8 @@ static bool louan_init(struct louan *louan)
   }
 
   louan->words.len = WORD_LEN;
-  louan->words.list = words_5;
-  louan->words.nr = nr_word_5;
+  louan->words.list = wordle_louan_fr_5_words;
+  louan->words.nr = wordle_louan_fr_5_nr_word;
 
   if (wordle_init(&louan->wordle, &louan->words) == false) {
     return false;

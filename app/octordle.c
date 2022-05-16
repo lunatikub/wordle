@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "fr_words_5.h"
+#include "wordleplay_fr_5_words.h"
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"
@@ -46,6 +46,8 @@ struct octordle {
   unsigned height_sz;
   unsigned space_sz;
   unsigned space_grid_sz;
+  bool solved[NR_GRID];
+  unsigned nr_solved;
 };
 
 static void octordle_get_location(struct octordle *octordle, unsigned grid,
@@ -131,8 +133,8 @@ static bool octordle_init(struct octordle *octordle)
   printf("[octordle] screen size: %d x %d\n", octordle->x11.width, octordle->x11.height);
 
   octordle->words.len = WORD_LEN;
-  octordle->words.list = words_5;
-  octordle->words.nr = nr_word_5;
+  octordle->words.list = wordleplay_fr_5_words;
+  octordle->words.nr = wordleplay_fr_5_nr_word;
 
   for (unsigned i = 0; i < NR_GRID; ++i) {
     if (wordle_init(&octordle->wordle[i], &octordle->words) == false) {
@@ -156,7 +158,7 @@ static void octordle_wait_round_end(struct octordle *octordle, unsigned round)
   struct coord coord;
   struct color color = { 0, 0, 0 };
 
-#define TIME_300MS 300000
+#define WAITING_TIME 300000 /* ms */
   while (color_approx_eq(&color, &c_right) == false &&
          color_approx_eq(&color, &c_wrong) == false &&
          color_approx_eq(&color, &c_discarded) == false) {
@@ -164,9 +166,9 @@ static void octordle_wait_round_end(struct octordle *octordle, unsigned round)
     /* last location of the last grid of the line `round` */
     octordle_get_location(octordle, NR_GRID - 1, round, octordle->words.len - 1, &coord);
     utils_x11_color_get(&octordle->x11, coord.x, coord.y, &color);
-    usleep(TIME_300MS);
+    usleep(WAITING_TIME);
   }
-#undef TIME_300MS
+#undef WAITING_TIME
 }
 
 static bool octordle_get_locations_status(struct octordle *o, unsigned round)
@@ -188,25 +190,43 @@ static bool octordle_get_locations_status(struct octordle *o, unsigned round)
       o->wordle[grid].current[i] = status;
       wordle_dump_location_status(status);
       if (right_location == o->words.len) {
-        printf("[octordle] grid %u is solved !\n", grid);
-        return true;
+        o->solved[grid] = true;
+        ++o->nr_solved;
       }
     }
     printf("] ");
   }
   printf("\n");
+  if (o->nr_solved == NR_GRID) {
+    printf("[octordle] <<<<<< WIN >>>>>>\n");
+    return true;
+  }
+  printf("[octordle] number of solved grid: %u\n", o->nr_solved);
   return false;
 
 }
 
 static const char* octordle_find_next_candidate(struct octordle *o, unsigned round)
 {
+  unsigned grid;
   unsigned best_grid = 0;
   unsigned best_nr_candidate = 999999;
   unsigned nr_candidate = 0;
 
+  /* select the first non-solved grid */
+  for (grid = 0; grid < NR_GRID; ++grid) {
+    if (o->solved[grid] == false) {
+      best_grid = grid;
+      break;
+    }
+  }
+  printf("[octordle] first grid unsolved: %u\n", best_grid);
+
   printf("[octordle] {round:%u} ", round + 1);
-  for (unsigned grid = 0; grid < NR_GRID; ++grid) {
+  for (grid = 0; grid < NR_GRID; ++grid) {
+    if (o->solved[grid] == true) {
+      continue;
+    }
     struct wordle *w = &o->wordle[grid];
     wordle_update_status(w);
     nr_candidate = wordle_count_number_of_candidates(w);

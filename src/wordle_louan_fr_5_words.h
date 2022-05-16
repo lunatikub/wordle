@@ -1,6 +1,6 @@
-static const unsigned nr_word_5 = 7980;
+static const unsigned wordle_louan_fr_5_nr_word = 7980;
 
-static const char *words_5[] = {
+static const char *wordle_louan_fr_5_words[] = {
   "abaca", "abale", "abats", "abbes", "abces", "abdos", "abees", "abers", 
   "abeti", "abies", "abima", "abime", "ables", "aboie", "abois", "aboli", 
   "abord", "abots", "about", "aboya", "aboye", "abras", "abria", "abrie", 

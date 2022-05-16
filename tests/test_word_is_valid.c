@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include <wordle.h>
-#include "fr_words_5.h"
+#include "wordle_louan_fr_5_words.h"
 
 #include "test.h"
 
@@ -31,7 +31,7 @@ static void set_wrong_location(struct wordle *wordle, bool *wrong,
 TEST_F(word_is_valid, conte)
 {
   struct wordle wordle;
-  struct word words = { words_5, nr_word_5, 5 };
+  struct word words = { wordle_louan_fr_5_words, wordle_louan_fr_5_nr_word, 5 };
   if (wordle_init(&wordle, &words) == false) {
     return false;
   }
@@ -45,7 +45,7 @@ TEST_F(word_is_valid, conte)
 TEST_F(word_is_valid, sueur)
 {
   struct wordle wordle;
-  struct word words = { words_5, nr_word_5, 5 };
+  struct word words = { wordle_louan_fr_5_words, wordle_louan_fr_5_nr_word, 5 };
   if (wordle_init(&wordle, &words) == false) {
     return false;
   }
