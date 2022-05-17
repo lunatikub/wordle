@@ -54,13 +54,13 @@ void utils_x11_color_get(struct utils_x11 *x11, int x, int y, struct color *colo
 
 static void utils_x11_press_key(struct utils_x11 *x11, KeyCode keycode)
 {
-#define TIME_50MS 50000
+#define WAITING_TIME 30000 /* ms */
   XTestFakeKeyEvent(x11->display, keycode, true, 0);
   XFlush(x11->display);
-  usleep(TIME_50MS);
+  usleep(WAITING_TIME);
   XTestFakeKeyEvent(x11->display, keycode, false, 0);
   XFlush(x11->display);
-#undef TIME_50MS
+#undef WAITING_TIME
 }
 
 void utils_x11_write(struct utils_x11 *x11, const char *word, unsigned len)

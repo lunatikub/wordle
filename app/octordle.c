@@ -158,7 +158,7 @@ static void octordle_wait_round_end(struct octordle *octordle, unsigned round)
   struct coord coord;
   struct color color = { 0, 0, 0 };
 
-#define WAITING_TIME 300000 /* ms */
+#define WAITING_TIME 20000 /* ms */
   while (color_approx_eq(&color, &c_right) == false &&
          color_approx_eq(&color, &c_wrong) == false &&
          color_approx_eq(&color, &c_discarded) == false) {
