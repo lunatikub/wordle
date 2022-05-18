@@ -14,7 +14,7 @@ enum status {
 };
 
 struct wordle {
-  struct word *words;
+  const struct word *words;
   char candidate[MAX_WORD_LEN];
   enum status current[MAX_WORD_LEN];
   char right[MAX_WORD_LEN];
@@ -26,7 +26,7 @@ struct wordle {
 /**
  * Initialize and check if the list of words is valid.
 */
-bool wordle_init(struct wordle *wordle, struct word *words);
+bool wordle_init(struct wordle *wordle, const struct word *words);
 
 /**
  * Update status with the current candidate results.

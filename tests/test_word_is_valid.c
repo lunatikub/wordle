@@ -31,8 +31,7 @@ static void set_wrong_location(struct wordle *wordle, bool *wrong,
 TEST_F(word_is_valid, conte)
 {
   struct wordle wordle;
-  struct word words = { wordle_louan_fr_5_words, wordle_louan_fr_5_nr_word, 5 };
-  if (wordle_init(&wordle, &words) == false) {
+  if (wordle_init(&wordle, &wordle_louan_fr_5) == false) {
     return false;
   }
   char discarded[5] = { 'a', 'e', 'i', 'l', 'r' };
@@ -45,8 +44,7 @@ TEST_F(word_is_valid, conte)
 TEST_F(word_is_valid, sueur)
 {
   struct wordle wordle;
-  struct word words = { wordle_louan_fr_5_words, wordle_louan_fr_5_nr_word, 5 };
-  if (wordle_init(&wordle, &words) == false) {
+  if (wordle_init(&wordle, &wordle_louan_fr_5) == false) {
     return false;
   }
   char discarded[] = { 'a', 'b', 'e', 'i', 'l', 't'};

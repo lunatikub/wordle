@@ -1,4 +1,4 @@
-static const unsigned wordle_louan_fr_5_nr_word = 7980;
+#include <words.h>
 
 static const char *wordle_louan_fr_5_words[] = {
   "abaca", "abale", "abats", "abbes", "abces", "abdos", "abees", "abers", 
@@ -999,4 +999,12 @@ static const char *wordle_louan_fr_5_words[] = {
   "zoide", "zoile", "zombi", "zonai", "zonal", "zonas", "zonat", "zonee", 
   "zoner", "zones", "zonez", "zooma", "zoome", "zooms", "zorse", "zouka", 
   "zouke", "zouks", "zozos", "zumba", 
+};
+
+static const struct word wordle_louan_fr_5 = {
+  "wordle_louan",
+  wordle_louan_fr_5_words,
+  7980,
+  5,
+  FR,
 };

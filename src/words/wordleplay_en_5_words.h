@@ -1,4 +1,4 @@
-static const unsigned wordleplay_en_5_nr_word = 12666;
+#include <words.h>
 
 static const char *wordleplay_en_5_words[] = {
   "aahed", "aalii", "aargh", "aarti", "abaca", "abaci", "aback", "abacs", 
@@ -1585,4 +1585,12 @@ static const char *wordleplay_en_5_words[] = {
   "zouks", "zowie", "zulus", "zupan", "zupas", "zurfs", "zuzim", "zygal", 
   "zygon", "zymes", "zymic", "prick", "irish", "ouija", "groin", "wagon", 
   "knape", "svelt", 
+};
+
+static const struct word wordleplay_en_5 = {
+  "wordleplay",
+  wordleplay_en_5_words,
+  12666,
+  5,
+  EN,
 };

@@ -1,4 +1,4 @@
-static const unsigned wordleplay_fr_5_nr_word = 5892;
+#include <words.h>
 
 static const char *wordleplay_fr_5_words[] = {
   "abats", "abbes", "abces", "abeti", "abima", "abime", "aboie", "abois", 
@@ -738,4 +738,12 @@ static const char *wordleplay_fr_5_words[] = {
   "zibez", "zigua", "zigue", "zincs", "zippa", "zippe", "zizis", "zloty", 
   "zoile", "zombi", "zonai", "zonal", "zonas", "zonat", "zonee", "zoner", 
   "zones", "zonez", "zooms", "zozos", 
+};
+
+static const struct word wordleplay_fr_5 = {
+  "wordleplay",
+  wordleplay_fr_5_words,
+  5892,
+  5,
+  FR,
 };

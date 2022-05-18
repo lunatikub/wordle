@@ -1,4 +1,4 @@
-static const unsigned wordleplay_en_4_nr_word = 5525;
+#include <words.h>
 
 static const char *wordleplay_en_4_words[] = {
   "aahs", "aals", "abac", "abas", "abba", "abbe", "abbs", "abed", 
@@ -692,4 +692,12 @@ static const char *wordleplay_en_4_words[] = {
   "zizz", "zobo", "zobu", "zoea", "zoic", "zols", "zona", "zone", 
   "zonk", "zoom", "zoon", "zoos", "zoot", "zori", "zouk", "zulu", 
   "zupa", "zurf", "zyga", "zyme", "zzzs", 
+};
+
+static const struct word wordleplay_en_4 = {
+  "wordleplay",
+  wordleplay_en_4_words,
+  5525,
+  4,
+  EN,
 };

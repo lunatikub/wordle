@@ -5,7 +5,7 @@
 
 #include "wordle.h"
 
-bool wordle_init(struct wordle *wordle, struct word *words)
+bool wordle_init(struct wordle *wordle, const struct word *words)
 {
   memset(wordle, 0, sizeof(*wordle));
   wordle->words = words;

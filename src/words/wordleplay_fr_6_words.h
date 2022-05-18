@@ -1,4 +1,4 @@
-static const unsigned wordleplay_fr_6_nr_word = 13903;
+#include <words.h>
 
 static const char *wordleplay_fr_6_words[] = {
   "abaque", "abatee", "abatte", "abattu", "abbaye", "aberra", "aberre", "abetie", 
@@ -1739,4 +1739,12 @@ static const char *wordleplay_fr_6_words[] = {
   "zonait", "zonale", "zonant", "zonard", "zonaux", "zonees", "zonent", "zonera", 
   "zonier", "zoniez", "zonons", "zonure", "zooide", "zouave", "zozota", "zozote", 
   "zwanze", "zygene", "zygoma", "zygote", "zymase", "zython", "zythum", 
+};
+
+static const struct word wordleplay_fr_6 = {
+  "wordleplay",
+  wordleplay_fr_6_words,
+  13903,
+  6,
+  FR,
 };

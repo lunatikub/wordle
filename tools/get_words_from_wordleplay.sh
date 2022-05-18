@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Download the list of words from `https://wordleplay.com/dic`.
-# Specify the language wanted in parameter.
-# Specify the length wanted in parameter.
+# $1: Specify the language wanted in parameter.
+# $2: Specify the length wanted in parameter.
 
 SCRIPT_NAME=./$(basename $0)
 SCRIPT_DIR=$(dirname $(readlink -f $0))
@@ -21,23 +21,35 @@ LANG=$1
 LEN=$2
 [ -z "${LEN}" ] && usage
 
-NAME=wordleplay_$LANG
-URL_WORDS=https://wordleplay.com/dic/$LANG.json
+NAME=wordleplay
 
-OUT=$(mktemp out.XXXXXX)
-wget $URL_WORDS -O $OUT
+echo "$NAME: $URL_WORDS"
 
-WORDS=$(mktemp words.XXXXXX)
-sed 's/,/\n/g' $OUT |
-    tr -d '"' |
-    tr -d '[' |
-    tr -d ']' |
-    sed 's/^ //' |
-    awk "length() == $LEN" > $WORDS
+for lang in $LANG
+do
+    URL_WORDS=https://wordleplay.com/dic/$lang.json
+    echo " + language: $lang ($URL_WORDS)"
 
-convert_list_to_c_file $NAME $WORDS $LEN
+    OUT=$(mktemp out.XXXXXX)
+    wget $URL_WORDS -O $OUT 2>&1 2>/dev/null
 
-rm -rf $WORDS
-rm -rf $OUT
+    for len in $LEN
+    do
+        echo "  + len: $len"
+
+        WORDS=$(mktemp words.XXXXXX)
+        sed 's/,/\n/g' $OUT |
+            tr -d '"' |
+            tr -d '[' |
+            tr -d ']' |
+            sed 's/^ //' |
+            awk "length() == $len" > $WORDS
+
+        convert_list_to_c_file $NAME $WORDS $len $lang
+        rm -rf $WORDS
+    done
+
+    rm -rf $OUT
+done
 
 exit 0

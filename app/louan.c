@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "words/wordle_louan_fr_5_words.h"
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"
@@ -40,7 +39,7 @@ static const struct color c_loc = { 47, 47, 47 };
 struct louan {
   struct wordle wordle;
   struct utils_x11 x11;
-  struct word words;
+  const struct word *words;
   struct coord first_loc;
   unsigned width_sz;
   unsigned height_sz;
@@ -97,11 +96,10 @@ static bool louan_init(struct louan *louan)
     return false;
   }
 
-  louan->words.len = WORD_LEN;
-  louan->words.list = wordle_louan_fr_5_words;
-  louan->words.nr = wordle_louan_fr_5_nr_word;
+  louan->words = words_find("wordle_louan", FR, 5);
+  assert(louan->words != NULL);
 
-  if (wordle_init(&louan->wordle, &louan->words) == false) {
+  if (wordle_init(&louan->wordle, louan->words) == false) {
     return false;
   }
   return true;
@@ -117,7 +115,7 @@ static void louan_wait_round_end(struct louan *louan, unsigned round)
          color_approx_eq(&color, &c_wrong) == false &&
          color_approx_eq(&color, &c_discarded) == false) {
     utils_x11_image_refresh(&louan->x11);
-    louan_get_location(louan, round, louan->words.len - 1, &coord);
+    louan_get_location(louan, round, louan->words->len - 1, &coord);
     utils_x11_color_get(&louan->x11, coord.x, coord.y, &color);
     usleep(TIME_300MS);
   }
@@ -131,7 +129,7 @@ static bool louan_get_locations_status(struct louan *l, unsigned round)
   unsigned right_location = 0;
 
   printf("[louan] {round:%u} ", round + 1);
-  for (unsigned i = 0; i < l->words.len; ++i) {
+  for (unsigned i = 0; i < l->words->len; ++i) {
     louan_get_location(l, round, i, &coord);
     utils_x11_color_get(&l->x11, coord.x, coord.y, &color);
     enum status status = wordle_map_from_color(&color, &c_right, &c_wrong, &c_discarded);
@@ -143,7 +141,7 @@ static bool louan_get_locations_status(struct louan *l, unsigned round)
     wordle_dump_location_status(status);
   }
   printf("\n");
-  if (right_location == l->words.len) {
+  if (right_location == l->words->len) {
     printf("[louan] <<<<<< WIN >>>>>>\n");
     return true;
   }
@@ -174,7 +172,7 @@ int main(void)
 
   for (unsigned round = 0; round < NR_ROUND; ++round) {
     wordle_set_candidate(&louan.wordle, next_candidate);
-    utils_x11_write(&louan.x11, louan.wordle.candidate, louan.words.len);
+    utils_x11_write(&louan.x11, louan.wordle.candidate, louan.words->len);
     louan_wait_round_end(&louan, round);
     if (louan_get_locations_status(&louan, round) == true) {
       break; /* win */

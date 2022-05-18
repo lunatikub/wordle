@@ -1,10 +1,7 @@
 #ifndef __OPTIONS__
 #define __OPTIONS__
 
-enum lang {
-  EN,
-  FR,
-};
+#include "lang.h"
 
 struct options {
   unsigned len;

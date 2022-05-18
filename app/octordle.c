@@ -3,13 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "words/wordleplay_fr_4_words.h"
-#include "words/wordleplay_fr_5_words.h"
-#include "words/wordleplay_fr_6_words.h"
-#include "words/wordleplay_en_4_words.h"
-#include "words/wordleplay_en_5_words.h"
-#include "words/wordleplay_en_6_words.h"
-
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"
@@ -47,7 +40,7 @@ static const struct color c_discarded = { 162, 162, 162 };
 struct octordle {
   struct wordle wordle[NR_GRID];
   struct utils_x11 x11;
-  struct word words;
+  const struct word *words;
   struct coord first_loc;
   unsigned width_sz;
   unsigned height_sz;
@@ -130,8 +123,7 @@ static bool octordle_set_locations(struct octordle *octordle)
   return true;
 }
 
-static bool octordle_init(struct octordle *octordle, unsigned word_len,
-                          const char **words, unsigned nr_word)
+static bool octordle_init(struct octordle *octordle, struct options *opts)
 {
   memset(octordle, 0, sizeof(*octordle));
 
@@ -140,16 +132,11 @@ static bool octordle_init(struct octordle *octordle, unsigned word_len,
   }
   printf("[octordle] screen size: %d x %d\n", octordle->x11.width, octordle->x11.height);
 
-  /* octordle->words.len = WORD_LEN; */
-  /* octordle->words.list = wordleplay_fr_5_words; */
-  /* octordle->words.nr = wordleplay_fr_5_nr_word; */
-
-  octordle->words.len = word_len;
-  octordle->words.list = words;
-  octordle->words.nr = nr_word;
+  octordle->words = words_find("wordleplay", opts->lang, opts->len);
+  assert(octordle->words != NULL);
 
   for (unsigned i = 0; i < NR_GRID; ++i) {
-    if (wordle_init(&octordle->wordle[i], &octordle->words) == false) {
+    if (wordle_init(&octordle->wordle[i], octordle->words) == false) {
       return false;
     }
   }
@@ -160,7 +147,7 @@ static void octordle_set_candidate(struct octordle *octordle, const char *candid
 {
 
   for (unsigned i = 0; i < NR_GRID; ++i) {
-    memcpy(octordle->wordle[i].candidate, candidate, octordle->words.len);
+    memcpy(octordle->wordle[i].candidate, candidate, octordle->words->len);
   }
   printf("[octordle] set next candidate: %s\n", candidate);
 }
@@ -176,7 +163,7 @@ static void octordle_wait_round_end(struct octordle *octordle, unsigned round)
          color_approx_eq(&color, &c_discarded) == false) {
     utils_x11_image_refresh(&octordle->x11);
     /* last location of the last grid of the line `round` */
-    octordle_get_location(octordle, NR_GRID - 1, round, octordle->words.len - 1, &coord);
+    octordle_get_location(octordle, NR_GRID - 1, round, octordle->words->len - 1, &coord);
     utils_x11_color_get(&octordle->x11, coord.x, coord.y, &color);
     usleep(WAITING_TIME);
   }
@@ -193,7 +180,7 @@ static bool octordle_get_locations_status(struct octordle *o, unsigned round)
   for (unsigned grid = 0; grid < NR_GRID; ++grid) {
     unsigned right_location = 0;
     printf("[");
-    for (unsigned i = 0; i < o->words.len; ++i) {
+    for (unsigned i = 0; i < o->words->len; ++i) {
       octordle_get_location(o, grid, round, i, &coord);
       utils_x11_color_get(&o->x11, coord.x, coord.y, &color);
       status = wordle_map_from_color(&color, &c_right, &c_wrong, &c_discarded);
@@ -201,7 +188,7 @@ static bool octordle_get_locations_status(struct octordle *o, unsigned round)
       right_location += status == RIGHT ? 1 : 0;
       o->wordle[grid].current[i] = status;
       wordle_dump_location_status(status);
-      if (right_location == o->words.len) {
+      if (right_location == o->words->len) {
         o->solved[grid] = true;
         ++o->nr_solved;
       }
@@ -257,80 +244,15 @@ static const char* octordle_find_next_candidate(struct octordle *o, unsigned rou
   return next_candidate;
 }
 
-static void octordle_map_fr_words(unsigned len, const char **words, unsigned *nr_word)
-{
-  switch (len) {
-    case 4:
-      words = wordleplay_fr_4_words;
-      *nr_word = wordleplay_fr_4_nr_word;
-      break;
-    case 5:
-      words = wordleplay_fr_5_words;
-      *nr_word = wordleplay_fr_5_nr_word;
-      break;
-    case 6:
-      words = wordleplay_fr_6_words;
-      *nr_word = wordleplay_fr_6_nr_word;
-      break;
-    default:
-      assert(!"length not supported");
-  };
-}
-
-static void octordle_map_en_words(unsigned len, const char **words, unsigned *nr_word)
-{
-  switch (len) {
-    case 4:
-      words = wordleplay_en_4_words;
-      *nr_word = wordleplay_en_4_nr_word;
-      break;
-    case 5:
-      words = wordleplay_en_5_words;
-      *nr_word = wordleplay_en_5_nr_word;
-      break;
-    case 6:
-      words = wordleplay_en_6_words;
-      *nr_word = wordleplay_en_6_nr_word;
-      break;
-      assert(!"length not supported");
-  };
-}
-
-static void octordle_map_words(struct options *opts, const char **words, unsigned *nr_word)
-{
-  switch (opts->lang) {
-    case FR:
-      octordle_map_fr_words(opts->len, words, nr_word);
-      break;
-    case EN:
-      octordle_map_en_words(opts->len, words, nr_word);
-      break;
-    default:
-      assert(!"lang not supported");
-  };
-}
-
 int main(int argc, char **argv)
 {
   struct options opts;
   options_parse(argc, argv, &opts);
 
-  printf("lang: %u\n", opts.lang);
-  printf("len: %u\n", opts.len);
-
-  const char **words = NULL;
-  unsigned nr_word = 0;
-
-  octordle_map_words(&opts, words, &nr_word);
-
-  printf("nr_word: %u\n", nr_word);
-
-  return 0;
-
   const char *next_candidate = "tarie";
   struct octordle octordle;
 
-  octordle_init(&octordle, opts.len, words, nr_word);
+  octordle_init(&octordle, &opts);
 
   if (octordle_set_locations(&octordle) == false) {
     return -1;
@@ -338,7 +260,7 @@ int main(int argc, char **argv)
 
   for (unsigned round = 0; round < NR_ROUND; ++round) {
     octordle_set_candidate(&octordle, next_candidate);
-    utils_x11_write(&octordle.x11, next_candidate, octordle.words.len);
+    utils_x11_write(&octordle.x11, next_candidate, octordle.words->len);
     octordle_wait_round_end(&octordle, round);
     octordle_get_locations_status(&octordle, round);
     next_candidate = octordle_find_next_candidate(&octordle, round);

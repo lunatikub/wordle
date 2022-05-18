@@ -1,4 +1,4 @@
-static const unsigned wordleplay_en_6_nr_word = 22426;
+#include <words.h>
 
 static const char *wordleplay_en_6_words[] = {
   "aahing", "aaliis", "aarrgh", "aartis", "abacas", "abacus", "abakas", "abamps", 
@@ -2805,4 +2805,12 @@ static const char *wordleplay_en_6_words[] = {
   "zouave", "zounds", "zoysia", "zufoli", "zufolo", "zupans", "zuzzim", "zydeco", 
   "zygoid", "zygoma", "zygose", "zygote", "zymase", "zymite", "zymoid", "zymome", 
   "zythum", "jewish", 
+};
+
+static const struct word wordleplay_en_6 = {
+  "wordleplay",
+  wordleplay_en_6_words,
+  22426,
+  6,
+  EN,
 };
