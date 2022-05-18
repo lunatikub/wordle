@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "wordle_louan_fr_5_words.h"
+#include "words/wordle_louan_fr_5_words.h"
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"

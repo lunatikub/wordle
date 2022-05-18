@@ -46,6 +46,7 @@ src = files(
   'src/coord.c',
   'src/dump.c',
   'src/utils_x11.c',
+  'src/options.c',
 )
 
 cc = meson.get_compiler('c')

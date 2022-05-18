@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include <wordle.h>
-#include "wordle_louan_fr_5_words.h"
+#include "words/wordle_louan_fr_5_words.h"
 
 #include "test.h"
 
