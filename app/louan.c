@@ -6,6 +6,7 @@
 #include "utils_x11.h"
 #include "wordle.h"
 #include "color.h"
+#include "options.h"
 
 /**
  * This bot plays on the following URL: https://wordle.louan.me
@@ -153,12 +154,16 @@ static const char* louan_find_next_candidate(struct louan *l, unsigned round)
 }
 
 
-int main(void)
+int main(int argc, char **argv)
 {
   struct louan louan;
+  struct options opts;
+
+  options_parse(argc, argv, &opts);
 
   louan_init(&louan);
-  const char *next_candidate = words_find_best_candidate(louan.words);
+  const char *next_candidate = opts.first == NULL ?
+    words_find_best_candidate(louan.words) : opts.first;
 
   if (louan_set_locations(&louan) == false) {
     return -1;

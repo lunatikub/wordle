@@ -6,13 +6,20 @@
 
 #include "options.h"
 
+enum {
+  CASE_LEN,
+  CASE_LANG,
+  CASE_FIRST,
+};
+
 static struct option long_options[] = {
-  { "len", required_argument, 0,  0 },
-  { "lang", required_argument, 0,  0 },
+  { "len", required_argument, 0, 0 },
+  { "lang", required_argument, 0, 0 },
+  { "first", required_argument, 0, 0 },
   { 0, 0, 0,  0 }
 };
 
-static enum lang map_lang(const char *lang)
+static enum lang options_map_lang(const char *lang)
 {
   if (strcmp(lang, "en") == 0) {
     return EN;
@@ -27,6 +34,7 @@ static void options_set_default(struct options *opts)
 {
   opts->len = DEFAULT_LEN;
   opts->lang = DEFAULT_LANG;
+  opts->first = NULL;
 }
 
 void options_parse(int argc, char **argv, struct options *opts)
@@ -42,12 +50,20 @@ void options_parse(int argc, char **argv, struct options *opts)
       break;
     }
     switch (option_index) {
-      case 0:
+      case CASE_LEN:
         opts->len = atoi(optarg);
         break;
-      case 1:
-        opts->lang = map_lang(optarg);
+      case CASE_LANG:
+        opts->lang = options_map_lang(optarg);
+        break;
+      case CASE_FIRST:
+        opts->first = strdup(optarg);
         break;
     }
   }
+}
+
+void options_clean(struct options *opts)
+{
+  free(opts->first);
 }

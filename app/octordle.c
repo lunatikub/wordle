@@ -257,7 +257,8 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  const char *next_candidate = words_find_best_candidate(octordle.words);
+  const char *next_candidate = opts.first == NULL ?
+    words_find_best_candidate(octordle.words) : opts.first;
 
   for (unsigned round = 0; round < NR_ROUND; ++round) {
     octordle_set_candidate(&octordle, next_candidate);

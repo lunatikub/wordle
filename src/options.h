@@ -6,6 +6,7 @@
 struct options {
   unsigned len;
   enum lang lang;
+  char *first;
 };
 
 /**
@@ -14,6 +15,7 @@ struct options {
 
 #define DEFAULT_LEN 5
 #define DEFAULT_LANG FR
+#define DEFAULT_FIRST NULL
 
 /**
  * Parse the options:
@@ -22,5 +24,10 @@ struct options {
  * The options are defined in the file `options.c`.
  */
 void options_parse(int argc, char **argv, struct options *opts);
+
+/**
+ * Clean the options previously parsed.
+ */
+void options_clean(struct options *opts);
 
 #endif /* !__OPTIONS__ */
