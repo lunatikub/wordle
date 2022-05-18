@@ -55,20 +55,18 @@ x11_test = dependency('xtst', required: false, disabler: true)
 
 subdir('tests')
 
-executable(
-  'louan',
-  src,
-  'app/louan.c',
-  include_directories: inc,
-  c_args: flags,
-  dependencies : [ x11, x11_test ],
-)
-
-executable(
+applications = [
+  'wordle_louan',
   'octordle',
-  src,
-  'app/octordle.c',
-  include_directories: inc,
-  c_args: flags,
-  dependencies : [ x11, x11_test ],
-)
+]
+
+foreach app : applications
+  executable(
+    app,
+    src,
+    'app/' + app + '.c',
+    include_directories: inc,
+    c_args: flags,
+    dependencies : [ x11, x11_test ],
+  )
+endforeach
