@@ -19,9 +19,6 @@
 /* Number of grid. */
 #define NR_GRID 8
 
-/* Number of letters in the word. */
-#define WORD_LEN 5
-
 /**
  * This is the margin between the left-up corner
  * of a location and the color inside the location.
@@ -112,13 +109,13 @@ static bool octordle_set_locations(struct octordle *octordle)
   printf("[octordle] first location: (%u,%u)\n", octordle->first_loc.x, octordle->first_loc.y);
 
   /* find the space between two grids */
-  from.x += octordle->width_sz * WORD_LEN + octordle->space_sz * WORD_LEN;
+  from.x += octordle->width_sz * octordle->words->len + octordle->space_sz * octordle->words->len;
   from.y += 10;
   assert(utils_x11_find_h_inc_from(&octordle->x11, &from, &to, &c_white));
   from = to;
   assert(utils_x11_find_h_inc_from(&octordle->x11, &from, &to, &c_empty));
   octordle->space_grid_sz = (to.x - from.x) +
-    WORD_LEN * octordle->width_sz + WORD_LEN * octordle->space_sz;
+    octordle->words->len * octordle->width_sz + octordle->words->len * octordle->space_sz;
   printf("[octordle] space between two grids: %u\n", octordle->space_grid_sz);
 
   return true;
