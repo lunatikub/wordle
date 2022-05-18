@@ -1,6 +1,7 @@
 
 tests = [
   'word_is_valid',
+  'find_candidate',
 ]
 
 foreach t : tests

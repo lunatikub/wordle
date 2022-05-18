@@ -6,9 +6,6 @@
 #include "words.h"
 #include "color.h"
 
-#define ALPHA_SZ 26
-#define MAX_WORD_LEN 10
-
 enum status {
   UNKNOWN,
   DISCARDED,
