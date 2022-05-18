@@ -11,14 +11,8 @@
  * This bot plays on the following URL: https://wordle.louan.me
  */
 
-/* One of the best word to start with. */
-#define FIRST_CANDIDATE "tarie"
-
 /* Maximum number of round */
 #define NR_ROUND 6
-
-/* Number of letters in the word. */
-#define WORD_LEN 5
 
 /**
  * This is the margin between the left-up corner
@@ -161,10 +155,10 @@ static const char* louan_find_next_candidate(struct louan *l, unsigned round)
 
 int main(void)
 {
-  const char *next_candidate = FIRST_CANDIDATE;
   struct louan louan;
 
   louan_init(&louan);
+  const char *next_candidate = words_find_best_candidate(louan.words);
 
   if (louan_set_locations(&louan) == false) {
     return -1;

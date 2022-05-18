@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
@@ -209,7 +210,7 @@ static const char* octordle_find_next_candidate(struct octordle *o, unsigned rou
 {
   unsigned grid;
   unsigned best_grid = 0;
-  unsigned best_nr_candidate = 999999;
+  unsigned best_nr_candidate = UINT_MAX;
   unsigned nr_candidate = 0;
 
   /* select the first non-solved grid */
@@ -246,17 +247,17 @@ static const char* octordle_find_next_candidate(struct octordle *o, unsigned rou
 
 int main(int argc, char **argv)
 {
-  struct options opts;
-  options_parse(argc, argv, &opts);
-
-  const char *next_candidate = "tarie";
   struct octordle octordle;
+  struct options opts;
 
+  options_parse(argc, argv, &opts);
   octordle_init(&octordle, &opts);
 
   if (octordle_set_locations(&octordle) == false) {
     return -1;
   }
+
+  const char *next_candidate = words_find_best_candidate(octordle.words);
 
   for (unsigned round = 0; round < NR_ROUND; ++round) {
     octordle_set_candidate(&octordle, next_candidate);
