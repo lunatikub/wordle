@@ -19,7 +19,7 @@ enum operator {
 struct node {
   enum node_type type;
   union {
-    unsigned operand;
+    int operand;
     enum operator operator;
   };
   struct node *next;
@@ -29,6 +29,7 @@ struct node {
 struct equation {
   struct node *head;
   struct node *tail;
+  unsigned nr;
 };
 
 /**
@@ -52,8 +53,17 @@ void equation_node_insert_tail(struct equation *eq, struct node *node);
 void equation_free(struct equation *eq);
 
 /**
- * Check if an equation is valid.
+ * Check if an equation is sementically valid.
+ * 1+2=3: OK
+ * 1+2+3: KO
+ * 1++2=3: KO
+ * Rules has exposed into the code.
  */
-bool equation_is_valid(const struct equation *eq);
+bool equation_is_valid(struct equation *eq);
+
+/**
+ * Reduce the equationi to check the result validity.
+ */
+bool equation_reduce(struct equation *eq);
 
 #endif /* !__EQUATION__ */

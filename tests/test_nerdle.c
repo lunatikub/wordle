@@ -117,6 +117,58 @@ TEST_F(nerdle, is_valid)
   return true;
 }
 
+/* static void equation_dump(struct equation *eq) */
+/* { */
+/*   struct node *node = eq->head; */
+
+/*   printf("%u: ", eq->nr); */
+/*   while (node != NULL) { */
+/*     if (node->type == NODE_OPERAND) { */
+/*       printf("%u", node->operand); */
+/*     } else { */
+/*       switch (node->operator) { */
+/*         case OPERATOR_PLUS: */
+/*           printf("+"); */
+/*           break; */
+/*         case OPERATOR_MINUS: */
+/*           printf("-"); */
+/*           break; */
+/*         case OPERATOR_TIME: */
+/*           printf("*"); */
+/*           break; */
+/*         case OPERATOR_DIV: */
+/*           printf("/"); */
+/*           break; */
+/*         case OPERATOR_EQ: */
+/*           printf("="); */
+/*           break; */
+/*       }; */
+/*     } */
+/*     node = node->next; */
+/*   } */
+/*   printf("\n"); */
+/* } */
+
+TEST_F(nerdle, reduce)
+{
+#define EXPECT_REDUCE(STR, RES) \
+  ({                                                    \
+    struct equation *eq = parse(STR, sizeof(STR) - 1);  \
+    EXPECT_TRUE(equation_reduce(eq) == RES);            \
+    equation_free(eq);                                  \
+  })
+
+  EXPECT_REDUCE("1+2=3", true);
+  EXPECT_REDUCE("1+2*5=11", true);
+  EXPECT_REDUCE("1-2+1*2=1", true);
+  EXPECT_REDUCE("1-2+1*2=0", false);
+  EXPECT_REDUCE("2/2+1*2=3", true);
+  EXPECT_REDUCE("2/2*2+1*2=4", true);
+
+#undef EXPECT_REDUCE
+  return true;
+}
+
 #undef X
 #undef Y
 
@@ -130,6 +182,7 @@ const static struct test nerdle_tests[] = {
   TEST(nerdle, lexer),
   TEST(nerdle, parser),
   TEST(nerdle, is_valid),
+  TEST(nerdle, reduce),
 };
 
 TEST_SUITE(nerdle);
