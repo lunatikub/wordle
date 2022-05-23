@@ -47,6 +47,9 @@ src = files(
   'src/dump.c',
   'src/utils_x11.c',
   'src/options.c',
+  'src/nerdle/lexer.c',
+  'src/nerdle/parser.c',
+  'src/nerdle/equation.c',
 )
 
 cc = meson.get_compiler('c')

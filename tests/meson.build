@@ -3,6 +3,7 @@ tests = [
   'word_is_valid',
   'find_candidate',
   'wordle',
+  'nerdle',
 ]
 
 foreach t : tests
