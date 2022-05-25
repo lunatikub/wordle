@@ -6,6 +6,7 @@
 #include "equation.h"
 #include "parser.h"
 
+/* alphabet of a nerdle equation. */
 static const char alpha[] = "0123456789+-/*=";
 
 unsigned nerdle_map_alpha(char c)
@@ -34,9 +35,25 @@ static struct candidate* nerdle_candidate_new(const char *equation)
   return candidate;
 }
 
-static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsigned idx)
+static bool nerdle_is_valid_char(struct nerdle *nerdle, char c, unsigned position)
 {
-  if (idx == nerdle->len) {
+  unsigned mapped = nerdle_map_alpha(c);
+
+  if (nerdle->discarded[mapped] == true) {
+    return false;
+  }
+  if (nerdle->right[position] != 0 && nerdle->right[position] != c) {
+    return false;
+  }
+  if (nerdle->wrong[mapped][position] == true) {
+    return false;
+  }
+  return true;
+}
+
+static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsigned position)
+{
+  if (position == nerdle->len) {
     struct equation *eq = parse(str, nerdle->len);
     if (eq == NULL) {
       return;
@@ -51,19 +68,11 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
   }
 
   for (unsigned i = 0; i < sizeof(alpha) - 1; ++i) {
-    unsigned mapped = nerdle_map_alpha(alpha[i]);
-
-    if (nerdle->discarded[mapped] == true) {
+    if (nerdle_is_valid_char(nerdle, alpha[i], position) == false) {
       continue;
     }
-    if (nerdle->right[idx] != 0 && nerdle->right[idx] != alpha[i]) {
-      continue;
-    }
-    if (nerdle->wrong[mapped][idx] == true) {
-      continue;
-    }
-    str[idx] = alpha[i];
-    nerdle_generate_equations_rec(nerdle, str, idx + 1);
+    str[position] = alpha[i];
+    nerdle_generate_equations_rec(nerdle, str, position + 1);
   }
 }
 
@@ -81,19 +90,7 @@ void nerdle_eliminate_candidates(struct nerdle *nerdle)
       continue;
     }
     for (unsigned i = 0; i < nerdle->len; ++i) {
-      unsigned mapped = nerdle_map_alpha(candidate->equation[i]);
-
-      if (nerdle->discarded[mapped] == true) {
-        candidate->eliminated = true;
-        --nerdle->nr_candidate;
-        break;
-      }
-      if (nerdle->right[i] != 0 && nerdle->right[i] != candidate->equation[i]) {
-        candidate->eliminated = true;
-        --nerdle->nr_candidate;
-        break;
-      }
-      if (nerdle->wrong[mapped][i] == true) {
+      if (nerdle_is_valid_char(nerdle, candidate->equation[i], i) == false) {
         candidate->eliminated = true;
         --nerdle->nr_candidate;
         break;
