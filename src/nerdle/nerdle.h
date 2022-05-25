@@ -11,6 +11,7 @@
 
 struct candidate {
   char *equation;
+  bool eliminated;
   STAILQ_ENTRY(candidate) next;
 };
 
@@ -34,5 +35,7 @@ const char* nerdle_find_best_equation(struct nerdle *nerdle);
 const char *nerdle_first_equation(struct nerdle *nerdle);
 
 unsigned nerdle_map_alpha(char c);
+
+void nerdle_eliminate_candidates(struct nerdle *nerlde);
 
 #endif /* !__NERDLE__ */

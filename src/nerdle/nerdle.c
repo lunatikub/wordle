@@ -30,6 +30,7 @@ static struct candidate* nerdle_candidate_new(const char *equation)
 {
   struct candidate *candidate = malloc(sizeof(*candidate));
   candidate->equation = strdup(equation);
+  candidate->eliminated = false;
   return candidate;
 }
 
@@ -72,6 +73,35 @@ void nerdle_generate_equations(struct nerdle *nerdle)
   nerdle_generate_equations_rec(nerdle, str, 0);
 }
 
+void nerdle_eliminate_candidates(struct nerdle *nerdle)
+{
+  struct candidate *candidate;
+  STAILQ_FOREACH(candidate, &nerdle->candidates, next) {
+    if (candidate->eliminated == true) {
+      continue;
+    }
+    for (unsigned i = 0; i < nerdle->len; ++i) {
+      unsigned mapped = nerdle_map_alpha(candidate->equation[i]);
+
+      if (nerdle->discarded[mapped] == true) {
+        candidate->eliminated = true;
+        --nerdle->nr_candidate;
+        break;
+      }
+      if (nerdle->right[i] != 0 && nerdle->right[i] != candidate->equation[i]) {
+        candidate->eliminated = true;
+        --nerdle->nr_candidate;
+        break;
+      }
+      if (nerdle->wrong[mapped][i] == true) {
+        candidate->eliminated = true;
+        --nerdle->nr_candidate;
+        break;
+      }
+    }
+  }
+}
+
 const char* nerdle_find_best_equation(struct nerdle *nerdle)
 {
   if (nerdle->nr_candidate == 0) {
@@ -83,6 +113,9 @@ const char* nerdle_find_best_equation(struct nerdle *nerdle)
   unsigned best_variance = 0;
 
   STAILQ_FOREACH(candidate, &nerdle->candidates, next) {
+    if (candidate->eliminated == true) {
+      continue;
+    }
     bool alpha_once[sizeof(alpha) / sizeof(char)] = { false };
     unsigned variance = 0;
     for (unsigned i = 0; i < nerdle->len; ++i) {
