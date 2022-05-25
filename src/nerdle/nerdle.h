@@ -1,6 +1,7 @@
 #ifndef __NERDLE__
 #define __NERDLE__
 
+#include <stdbool.h>
 #include <sys/queue.h>
 
 #define MIN_EQ_SZ 5
@@ -16,7 +17,7 @@ struct candidate {
 struct nerdle {
   unsigned len;
   char right[MAX_EQ_SZ];
-  char discarded[ALPHA_SZ];
+  bool discarded[ALPHA_SZ];
   STAILQ_HEAD(, candidate) candidates;
   unsigned nr_candidate;
 };
@@ -30,5 +31,7 @@ void nerdle_generate_equations(struct nerdle *nerdle);
 const char* nerdle_find_best_equation(struct nerdle *nerdle);
 
 const char *nerdle_first_equation(struct nerdle *nerdle);
+
+unsigned nerdle_map_alpha(char c);
 
 #endif /* !__NERDLE__ */

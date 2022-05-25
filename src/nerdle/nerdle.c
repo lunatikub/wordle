@@ -8,7 +8,7 @@
 
 static const char alpha[] = "0123456789+-/*=";
 
-static unsigned nerdle_map_alpha(char c)
+unsigned nerdle_map_alpha(char c)
 {
   if (c >= '0' && c <= '9') {
     return c - '0';
@@ -50,6 +50,9 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
   }
 
   for (unsigned i = 0; i < sizeof(alpha) - 1; ++i) {
+    if (nerdle->discarded[nerdle_map_alpha(alpha[i])] == true) {
+      continue;
+    }
     if (nerdle->right[idx] != 0 && nerdle->right[idx] != alpha[i]) {
       continue;
     }
