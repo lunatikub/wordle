@@ -18,6 +18,7 @@ struct nerdle {
   unsigned len;
   char right[MAX_EQ_SZ];
   bool discarded[ALPHA_SZ];
+  bool wrong[ALPHA_SZ][MAX_EQ_SZ];
   STAILQ_HEAD(, candidate) candidates;
   unsigned nr_candidate;
 };

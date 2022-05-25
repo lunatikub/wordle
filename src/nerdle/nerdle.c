@@ -50,10 +50,15 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
   }
 
   for (unsigned i = 0; i < sizeof(alpha) - 1; ++i) {
-    if (nerdle->discarded[nerdle_map_alpha(alpha[i])] == true) {
+    unsigned mapped = nerdle_map_alpha(alpha[i]);
+
+    if (nerdle->discarded[mapped] == true) {
       continue;
     }
     if (nerdle->right[idx] != 0 && nerdle->right[idx] != alpha[i]) {
+      continue;
+    }
+    if (nerdle->wrong[mapped][idx] == true) {
       continue;
     }
     str[idx] = alpha[i];
