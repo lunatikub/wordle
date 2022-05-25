@@ -29,10 +29,34 @@ unsigned nerdle_map_alpha(char c)
 
 static struct candidate* nerdle_candidate_new(const char *equation)
 {
-  struct candidate *candidate = malloc(sizeof(*candidate));
+  struct candidate *candidate = calloc(1, sizeof(*candidate));
   candidate->equation = strdup(equation);
-  candidate->eliminated = false;
   return candidate;
+}
+
+static void nerdle_candidate_insert_head(struct nerdle *nerdle, struct candidate *candidate)
+{
+  candidate->next = nerdle->candidates;
+  if (nerdle->candidates != NULL) {
+    nerdle->candidates->prev = candidate;
+  }
+  nerdle->candidates = candidate;
+  ++nerdle->nr_candidate;
+}
+
+static void nerdle_candidate_remove(struct nerdle *nerdle, struct candidate *candidate)
+{
+  if (candidate->prev == NULL) { /* head */
+    nerdle->candidates = candidate->next;
+  } else {
+    candidate->prev->next = candidate->next;
+  }
+  if (candidate->next != NULL) {
+    candidate->next->prev = candidate->prev;
+  }
+  free(candidate->equation);
+  free(candidate);
+  --nerdle->nr_candidate;
 }
 
 static bool nerdle_is_valid_char(struct nerdle *nerdle, char c, unsigned position)
@@ -60,8 +84,7 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
     }
     if (equation_is_valid(eq) == true && equation_reduce(eq) == true) {
       struct candidate *candidate = nerdle_candidate_new(str);
-      STAILQ_INSERT_TAIL(&nerdle->candidates, candidate, next);
-      ++nerdle->nr_candidate;
+      nerdle_candidate_insert_head(nerdle, candidate);
     }
     equation_free(eq);
     return;
@@ -82,21 +105,41 @@ void nerdle_generate_equations(struct nerdle *nerdle)
   nerdle_generate_equations_rec(nerdle, str, 0);
 }
 
-void nerdle_eliminate_candidates(struct nerdle *nerdle)
+static struct candidate*
+nerdle_remove_candidate_if_needed(struct nerdle *nerdle, struct candidate *candidate)
 {
-  struct candidate *candidate;
-  STAILQ_FOREACH(candidate, &nerdle->candidates, next) {
-    if (candidate->eliminated == true) {
-      continue;
-    }
-    for (unsigned i = 0; i < nerdle->len; ++i) {
-      if (nerdle_is_valid_char(nerdle, candidate->equation[i], i) == false) {
-        candidate->eliminated = true;
-        --nerdle->nr_candidate;
-        break;
-      }
+  for (unsigned i = 0; i < nerdle->len; ++i) {
+    if (nerdle_is_valid_char(nerdle, candidate->equation[i], i) == false) {
+      struct candidate *next = candidate->next;
+      nerdle_candidate_remove(nerdle, candidate);
+      return next;
     }
   }
+  return candidate->next;
+}
+
+void nerdle_select_equations(struct nerdle *nerdle)
+{
+  struct candidate *candidate = nerdle->candidates;
+  while (candidate != NULL) {
+    candidate = nerdle_remove_candidate_if_needed(nerdle, candidate);
+  }
+}
+
+static unsigned nerdle_get_variance(struct nerdle *nerdle, const char *equation)
+{
+  unsigned variance = 0;
+  bool once[ALPHA_SZ] = { false };
+
+  for (unsigned i = 0; i < nerdle->len; ++i) {
+    unsigned mapped = nerdle_map_alpha(equation[i]);
+    if (once[mapped] == false) {
+      once[mapped] = true;
+      ++variance;
+    }
+  }
+
+  return variance;
 }
 
 const char* nerdle_find_best_equation(struct nerdle *nerdle)
@@ -105,27 +148,17 @@ const char* nerdle_find_best_equation(struct nerdle *nerdle)
     return NULL;
   }
 
-  struct candidate *candidate;
-  const char *best_candidate = STAILQ_FIRST(&nerdle->candidates)->equation;
+  struct candidate *candidate = nerdle->candidates;
+  const char *best_candidate = nerdle->candidates->equation;
   unsigned best_variance = 0;
 
-  STAILQ_FOREACH(candidate, &nerdle->candidates, next) {
-    if (candidate->eliminated == true) {
-      continue;
-    }
-    bool alpha_once[sizeof(alpha) / sizeof(char)] = { false };
-    unsigned variance = 0;
-    for (unsigned i = 0; i < nerdle->len; ++i) {
-      unsigned idx = nerdle_map_alpha(candidate->equation[i]);
-      if (alpha_once[idx] == false) {
-        alpha_once[idx] = true;
-        ++variance;
-      }
-    }
+  while (candidate != NULL) {
+    unsigned variance = nerdle_get_variance(nerdle, candidate->equation);
     if (variance > best_variance) {
       best_variance = variance;
       best_candidate = candidate->equation;
     }
+    candidate = candidate->next;
   }
 
   return best_candidate;
@@ -149,19 +182,18 @@ struct nerdle* nerdle_create(unsigned len)
 
   struct nerdle *nerdle = calloc(1, sizeof(*nerdle));
   nerdle->len = len;
-  STAILQ_INIT(&nerdle->candidates);
   return nerdle;
 }
 
 void nerdle_destroy(struct nerdle *nerdle)
 {
-  struct candidate *candidate = NULL;
+  struct candidate *candidate = nerdle->candidates;
 
-  while (!STAILQ_EMPTY(&nerdle->candidates)) {
-    candidate = STAILQ_FIRST(&nerdle->candidates);
-    STAILQ_REMOVE_HEAD(&nerdle->candidates, next);
+  while (candidate != NULL) {
+    struct candidate *next = candidate->next;
     free(candidate->equation);
     free(candidate);
+    candidate = next;
   }
 
   free(nerdle);
