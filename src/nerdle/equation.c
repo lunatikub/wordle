@@ -41,39 +41,6 @@ void equation_free(struct equation *eq)
   free(eq);
 }
 
-static bool equation_once_operator_equal(const struct equation *eq)
-{
-  unsigned count_eq = 0;
-  struct node *node = eq->head;
-
-  while (node != NULL) {
-    if (node->type == NODE_OPERATOR && node->operator == OPERATOR_EQ) {
-      ++count_eq;
-    }
-    node = node->next;
-  }
-  return count_eq == 1;
-}
-
-static bool equation_has_sussessive_operators(const struct equation *eq)
-{
-  bool sussessive = 0;
-  struct node *node = eq->head;
-
-  while (node != NULL) {
-    if (node->type == NODE_OPERATOR) {
-      if (sussessive == true) {
-        return true;
-      }
-      sussessive = true;
-    } else {
-      sussessive = false;
-    }
-    node = node->next;
-  }
-  return false;;
-}
-
 bool equation_is_valid(struct equation *eq)
 {
   /* must end with an operand */
@@ -81,24 +48,41 @@ bool equation_is_valid(struct equation *eq)
     return false;
   }
 
-  /* must contain an operator `equal`. */
-  if (equation_once_operator_equal(eq) == false) {
-    return false;
+  struct node *node = eq->head;
+  bool successive = false;
+  unsigned successive_operator = 0;
+  unsigned nr_operator = 0; /* =/+*- */
+  unsigned nr_equal = 0; /* = */
+
+  while (node != NULL) {
+    if (node->type == NODE_OPERATOR) {
+      ++nr_operator;
+      if (node->operator == OPERATOR_EQ) {
+        ++nr_equal;
+      }
+      ++successive_operator;
+      if (successive_operator > 1) {
+        successive = true;
+      }
+    } else {
+      successive_operator = 0;
+    }
+    node = node->next;
   }
 
-  /* cannot have two or more successive operators. */
-  if (equation_has_sussessive_operators(eq) == true) {
-    return false;
-  }
-
-  return true;
+  return successive == false && nr_operator >= 2 && nr_equal == 1;
 }
 
-static void equation_nodes_merge(struct equation *eq,
+static bool equation_nodes_merge(struct equation *eq,
                                  struct node *left,
                                  struct node *node,
                                  struct node *right)
 {
+  /* forbidden div by 0. */
+  if (node->operator == OPERATOR_DIV && right->operand == 0) {
+    return false;
+  }
+
   node->prev = left->prev;
   node->next = right->next;
 
@@ -136,6 +120,7 @@ static void equation_nodes_merge(struct equation *eq,
   free(left);
   free(right);
   eq->nr -= 2;
+  return true;
 }
 
 static bool equation_reduce_operator(struct equation *eq, enum operator operator)
@@ -150,7 +135,9 @@ static bool equation_reduce_operator(struct equation *eq, enum operator operator
           right == NULL || right->type != NODE_OPERAND) {
         return false;
       }
-      equation_nodes_merge(eq, left, node, right);
+      if (equation_nodes_merge(eq, left, node, right) == false) {
+        return false;
+      }
     }
     node = node->next;
   }

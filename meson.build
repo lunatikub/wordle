@@ -50,6 +50,7 @@ src = files(
   'src/nerdle/lexer.c',
   'src/nerdle/parser.c',
   'src/nerdle/equation.c',
+  'src/nerdle/nerdle.c',
 )
 
 cc = meson.get_compiler('c')
@@ -61,6 +62,7 @@ subdir('tests')
 applications = [
   'wordle_louan',
   'octordle',
+  'nerdle',
 ]
 
 foreach app : applications

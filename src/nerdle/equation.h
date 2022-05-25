@@ -16,11 +16,14 @@ enum operator {
   OPERATOR_EQ,
 };
 
+/**
+ * List of nodes.
+ */
 struct node {
   enum node_type type;
   union {
-    int operand;
-    enum operator operator;
+    int operand; /* type == NODE_OPERATOR */
+    enum operator operator; /* type == NODE_OPERAND */
   };
   struct node *next;
   struct node *prev;
@@ -29,7 +32,7 @@ struct node {
 struct equation {
   struct node *head;
   struct node *tail;
-  unsigned nr;
+  unsigned nr; /* number of nodes */
 };
 
 /**
@@ -62,7 +65,7 @@ void equation_free(struct equation *eq);
 bool equation_is_valid(struct equation *eq);
 
 /**
- * Reduce the equationi to check the result validity.
+ * Reduce the equation to check the result validity.
  */
 bool equation_reduce(struct equation *eq);
 

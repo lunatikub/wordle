@@ -117,38 +117,6 @@ TEST_F(nerdle, is_valid)
   return true;
 }
 
-/* static void equation_dump(struct equation *eq) */
-/* { */
-/*   struct node *node = eq->head; */
-
-/*   printf("%u: ", eq->nr); */
-/*   while (node != NULL) { */
-/*     if (node->type == NODE_OPERAND) { */
-/*       printf("%u", node->operand); */
-/*     } else { */
-/*       switch (node->operator) { */
-/*         case OPERATOR_PLUS: */
-/*           printf("+"); */
-/*           break; */
-/*         case OPERATOR_MINUS: */
-/*           printf("-"); */
-/*           break; */
-/*         case OPERATOR_TIME: */
-/*           printf("*"); */
-/*           break; */
-/*         case OPERATOR_DIV: */
-/*           printf("/"); */
-/*           break; */
-/*         case OPERATOR_EQ: */
-/*           printf("="); */
-/*           break; */
-/*       }; */
-/*     } */
-/*     node = node->next; */
-/*   } */
-/*   printf("\n"); */
-/* } */
-
 TEST_F(nerdle, reduce)
 {
 #define EXPECT_REDUCE(STR, RES) \

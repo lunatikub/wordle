@@ -22,6 +22,7 @@ void wordle_update_status(struct wordle *wordle)
         wordle->discarded[c] = true;
         break;
       case RIGHT:
+        wordle->wrong[c] = false;
         wordle->right[i] = wordle->candidate[i];
         break;
       case WRONG:
