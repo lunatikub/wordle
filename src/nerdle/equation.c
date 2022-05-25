@@ -75,7 +75,7 @@ bool equation_is_valid(struct equation *eq)
 
 /**
  * Div by 0 is forbidden.
- * Only allows integer div.
+ * Only allows integer division.
  */
 static bool equation_check_div(struct node *node,
                                struct node *left,

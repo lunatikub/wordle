@@ -3,7 +3,7 @@
 
 #include "parser.h"
 
-static unsigned token_operand_to_unsigned(struct token *token, const char *str)
+static unsigned parser_token_operand_to_unsigned(struct token *token, const char *str)
 {
   const char *start = str + token->off_start;
   const char *end = str + token->off_end;
@@ -21,8 +21,14 @@ static struct node* parse_operand(const char *str, struct token *token)
 {
   struct node *node;
 
+  /* doesn't allow operand starting by 0 with a lenght > 1
+     like 01, 001, 02, ... */
+  if (token->off_end - token->off_start > 1 && str[token->off_start] == '0') {
+    return NULL;
+  }
+
   node = equation_node_new(NODE_OPERAND);
-  node->operand = token_operand_to_unsigned(token, str);
+  node->operand = parser_token_operand_to_unsigned(token, str);
 
   return node;
 }
@@ -63,6 +69,7 @@ struct equation* parse(const char *str, unsigned len)
 
   while (true) {
     if (lexer_token_fill(str, len, &token) == false) {
+      equation_free(eq);
       return NULL;
     }
     if (token.type == TOKEN_END) {
@@ -72,9 +79,11 @@ struct equation* parse(const char *str, unsigned len)
     } else {
       node = parse_operator(&token);
     }
-    if (node != NULL) {
-      equation_node_insert_tail(eq, node);
+    if (node == NULL) {
+      equation_free(eq);
+      return NULL;
     }
+    equation_node_insert_tail(eq, node);
     lexer_token_eat(&token);
   }
 
