@@ -50,6 +50,9 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
   }
 
   for (unsigned i = 0; i < sizeof(alpha) - 1; ++i) {
+    if (nerdle->right[idx] != 0 && nerdle->right[idx] != alpha[i]) {
+      continue;
+    }
     str[idx] = alpha[i];
     nerdle_generate_equations_rec(nerdle, str, idx + 1);
   }
