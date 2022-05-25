@@ -73,13 +73,35 @@ bool equation_is_valid(struct equation *eq)
   return successive == false && nr_operator >= 2 && nr_equal == 1;
 }
 
+/**
+ * Div by 0 is forbidden.
+ * Only allows integer div.
+ */
+static bool equation_check_div(struct node *node,
+                               struct node *left,
+                               struct node *right)
+{
+  if (node->operator != OPERATOR_DIV) {
+    return true;
+  }
+
+  if (right->operand == 0) {
+    return false;
+  }
+
+  if ((left->operand / right->operand) * right->operand != left->operand) {
+    return false;
+  }
+
+  return true;
+}
+
 static bool equation_nodes_merge(struct equation *eq,
                                  struct node *left,
                                  struct node *node,
                                  struct node *right)
 {
-  /* forbidden div by 0. */
-  if (node->operator == OPERATOR_DIV && right->operand == 0) {
+  if (equation_check_div(node, left, right) == false) {
     return false;
   }
 
