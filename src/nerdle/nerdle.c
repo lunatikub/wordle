@@ -91,14 +91,18 @@ static bool nerdle_is_valid_char(struct nerdle *nerdle, char c, unsigned positio
 
 static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsigned position)
 {
+  ++nerdle->nr_call;
   if (position == nerdle->len) {
     struct equation *eq = parse(str, nerdle->len);
     if (eq == NULL) {
+      ++nerdle->nr_fail;
       return;
     }
     if (equation_is_valid(eq) == true && equation_reduce(eq) == true) {
       struct candidate *candidate = nerdle_candidate_new(str);
       nerdle_candidate_insert_head(nerdle, candidate);
+    } else {
+      ++nerdle->nr_fail;
     }
     equation_free(eq);
     return;
@@ -116,7 +120,15 @@ static void nerdle_generate_equations_rec(struct nerdle *nerdle, char *str, unsi
 void nerdle_generate_equations(struct nerdle *nerdle)
 {
   char str[MAX_EQ_SZ] = { 0 };
-  nerdle_generate_equations_rec(nerdle, str, 0);
+
+  /* optimization: don't try the branchs starting by '/+-*=' */
+  for (unsigned i = 0; i < 10; ++i) {
+    if (nerdle_is_valid_char(nerdle, alpha[i], 0) == false) {
+      continue;
+    }
+    str[0] = alpha[i];
+    nerdle_generate_equations_rec(nerdle, str, 1);
+  }
 }
 
 static struct candidate*

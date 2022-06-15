@@ -21,6 +21,8 @@ struct nerdle {
   bool wrong[ALPHA_SZ][MAX_EQ_SZ];
   struct candidate *candidates;
   unsigned nr_candidate;
+  unsigned nr_fail;
+  unsigned nr_call;
 };
 
 /**

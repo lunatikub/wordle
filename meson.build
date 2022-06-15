@@ -64,6 +64,7 @@ applications = [
   'wordle_louan',
   'octordle',
   'nerdle',
+  'bench_nerdle',
 ]
 
 foreach app : applications
