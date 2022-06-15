@@ -12,6 +12,16 @@
 
 /**
  * This bot plays on the following URL: https://wordleplay.com/fr/nerdle
+ *
+ * You have to guess the hidden math equation in 6 tries and the color of the tiles changes
+ * to show how close you are. To start playing, enter any mathematical valid equation.
+ *
+ * Game Rules:
+ *   + The guess is accepted only with the correct equation
+ *   + Each guess must contain one “=”
+ *   + You can only use 1 2 3 4 5 6 7 8 9 0 numbers and + - * / = signs
+ *   + The equation must have an integer to the right of the '='
+ *   + Each guess is not commutative (a+b=c and b+a=c are different guesses)
  */
 
 /* Maximum number of round. */
@@ -37,16 +47,24 @@ struct handle {
   struct nerdle *nerdle;
   struct utils_x11 x11;
   struct coord first_loc;
-  unsigned width_sz;
-  unsigned height_sz;
-  unsigned space_sz;
+  unsigned width_loc_sz;
+  unsigned width_space_sz;
+  unsigned height_loc_sz;
+  unsigned height_space_sz;
 };
 
-static void nerdle_get_location(struct handle *handle, unsigned round,
-                                unsigned i, struct coord *coord)
+static void get_location(struct handle *handle, unsigned round,
+                         unsigned i, struct coord *coord)
 {
-  coord->x = handle->first_loc.x + (handle->space_sz + handle->width_sz) * i;
-  coord->y = handle->first_loc.y + (handle->space_sz + handle->height_sz) * round;
+  coord->x =
+    handle->first_loc.x +
+    (handle->width_space_sz + handle->width_loc_sz) * i +
+    MARGIN;
+
+  coord->y =
+    handle->first_loc.y +
+    (handle->height_space_sz + handle->height_loc_sz) * round +
+    MARGIN;
 }
 
 static bool nerdle_init(struct handle *handle, struct options *opts)
@@ -62,64 +80,79 @@ static bool nerdle_init(struct handle *handle, struct options *opts)
   return true;
 }
 
-static bool nerdle_set_locations(struct handle *handle)
+static void set_start_coord(struct handle *handle, struct coord *start)
 {
-  struct coord start;
+  printf("[nerdle] set the focus (by clicking) on the tabulation of the browser...\n");
+  printf("[nerdle] and be closest to midle of the first location of the first line...\n");
+  printf("[nerdle]             ---   ---     \n");
+  printf("[nerdle] here -> <- |   | |   |    \n");
+  printf("[nerdle]             ---   ---     \n");
+  printf("[nerdle]             ---   ---     \n");
+  printf("[nerdle]            |   | |   |    \n");
+  printf("[nerdle]             ---   ---  ...\n");
+  printf("[nerdle]            .\n");
+  printf("[nerdle]            .\n");
+  printf("[nerdle]            .\n");
+  utils_x11_focus(&handle->x11, start, 3, "nerdle");
+}
+
+static void set_horizontal_properties(struct handle *handle, struct coord *start)
+{
   struct coord from;
   struct coord to;
 
-  printf("[nerdle] set the focus (by clicking) on the tabulation...\n");
-  printf("[nerdle] and be closest to midle of the first location of the second line...\n");
-  printf("[nerdle]            ---   ---     \n");
-  printf("[nerdle]  here --> |   | |   |    \n");
-  printf("[nerdle]            ---   ---     \n");
-  printf("[nerdle]            ---   ---     \n");
-  printf("[nerdle]           |   | |   |    \n");
-  printf("[nerdle]            ---   ---  ...\n");
-  printf("[nerdle]           .\n");
-  printf("[nerdle]           .\n");
-  printf("[nerdle]           .\n");
-  utils_x11_focus(&handle->x11, &start, 3, "nerdle");
-
-  /* get the width of a location */
-  from = start;
+  /* width location size */
+  from = *start;
   assert(utils_x11_find_h_inc_from(&handle->x11, &from, &to, &c_empty));
   from = to;
+  handle->first_loc.x = to.x;
   assert(utils_x11_find_h_inc_from(&handle->x11, &from, &to, &c_white));
-  handle->width_sz = to.x - from.x - 1;
-  printf("[handle] width location size: %u\n", handle->width_sz);
+  handle->width_loc_sz = to.x - from.x;
 
-  /* get height of a location */
-  from.x = from.x + handle->width_sz / 2;
+  /* horizontal space size between two locations */
+  from = to;
+  assert(utils_x11_find_h_inc_from(&handle->x11, &from, &to, &c_white));
+  from = to;
+  assert(utils_x11_find_h_inc_from(&handle->x11, &from, &to, &c_empty));
+  handle->width_space_sz = to.x - from.x;
+
+  printf("[handle] width location size: %u\n", handle->width_loc_sz);
+  printf("[handle] first locaton x coordinate: %u\n", handle->first_loc.x);
+  printf("[handle] horizontal space between two locations: %u\n", handle->width_space_sz);
+}
+
+static void set_vertical_properties(struct handle *handle, struct coord *start)
+{
+  struct coord from;
+  struct coord to;
+
+  /* height location size */
+  from.x = handle->first_loc.x + handle->width_loc_sz / 2;
+  from.y = start->y;
   assert(utils_x11_find_v_dec_from(&handle->x11, &from, &to, &c_white));
+  handle->first_loc.y = to.y;
   from = to;
   ++from.y;
   assert(utils_x11_find_v_inc_from(&handle->x11, &from, &to, &c_white));
-  handle->height_sz = to.y - from.y;
-  printf("[handle] height location size: %u\n", handle->height_sz);
+  handle->height_loc_sz = to.y - from.y;
 
-  /* get space between two locations */
+  /* vertical space size between two locations */
   from = to;
-  ++to.y;
   assert(utils_x11_find_v_inc_from(&handle->x11, &from, &to, &c_empty));
-  handle->space_sz = to.y - from.y;
-  printf("[handle] space size between two locations: %u\n", handle->space_sz);
+  handle->height_space_sz = to.y - from.y;
 
-  /* find the y coordinate of the left up location */
-  from.y--;
-  assert(utils_x11_find_v_dec_from(&handle->x11, &from, &to, &c_white));
-  handle->first_loc.y = to.y - 1;
+  printf("[handle] height location size: %u\n", handle->height_loc_sz);
+  printf("[handle] first location y coordinate: %u\n", handle->first_loc.y);
+  printf("[handle] vertical space between two locations: %u\n", handle->height_space_sz);
+}
 
-  /* find the x coordinate of the left up location */
-  from.y = from.y + handle->height_sz / 2;
-  assert(utils_x11_find_h_dec_from(&handle->x11, &from, &to, &c_white));
-  handle->first_loc.x = to.x + 1;
+static void set_properties(struct handle *handle)
+{
+  struct coord start;
 
-  handle->first_loc.x += MARGIN;
-  handle->first_loc.y += MARGIN;
-  printf("[nerdle] first location: (%u,%u)\n", handle->first_loc.x, handle->first_loc.y);
-
-  return true;
+  set_start_coord(handle, &start);
+  set_horizontal_properties(handle, &start);
+  set_vertical_properties(handle, &start);
 }
 
 static void nerdle_wait_round_end(struct handle *handle, unsigned round)
@@ -133,7 +166,7 @@ static void nerdle_wait_round_end(struct handle *handle, unsigned round)
          color_approx_eq(&color, &c_discarded) == false) {
     utils_x11_image_refresh(&handle->x11);
     /* last location of the last grid of the line `round` */
-    nerdle_get_location(handle, round, handle->nerdle->len - 1, &coord);
+    get_location(handle, round, handle->nerdle->len - 1, &coord);
     utils_x11_color_get(&handle->x11, coord.x, coord.y, &color);
     usleep(WAITING_TIME);
   }
@@ -171,7 +204,7 @@ static bool nerdle_get_locations_status(struct handle *handle, unsigned round,
 
   printf("[");
   for (unsigned i = 0; i < handle->nerdle->len; ++i) {
-    nerdle_get_location(handle, round, i, &coord);
+    get_location(handle, round, i, &coord);
     utils_x11_color_get(&handle->x11, coord.x, coord.y, &color);
     status = status_map_from_colors(&color, &c_right, &c_wrong, &c_discarded);
     assert(status != UNKNOWN);
@@ -198,9 +231,7 @@ int main(int argc, char **argv)
   if (nerdle_init(&handle, &opts) == false) {
     return -1;
   }
-  if (nerdle_set_locations(&handle) == false) {
-    return -1;
-  }
+  set_properties(&handle);
 
   const char *equation = nerdle_first_equation(handle.nerdle);
 
@@ -212,7 +243,8 @@ int main(int argc, char **argv)
       break;
     }
     if (round == 0) {
-        nerdle_generate_equations(handle.nerdle);
+      printf("[nerdle] generate tree of equations\n");
+      nerdle_generate_equations(handle.nerdle);
     }
     nerdle_select_equations(handle.nerdle);
     equation = nerdle_find_best_equation(handle.nerdle);
