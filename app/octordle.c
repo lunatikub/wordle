@@ -68,7 +68,7 @@ static bool octordle_set_locations(struct octordle *octordle)
 
   printf("[octordle] set the focus (by clicking) on the tabulation...\n");
   printf("[octordle] and be closest to midle of the first location of the second line...\n");
-  utils_x11_focus(&octordle->x11, &start, 3);
+  utils_x11_focus(&octordle->x11, &start, 3, "octordle");
 
   /* get width of a location */
   from = start;
@@ -181,11 +181,11 @@ static bool octordle_get_locations_status(struct octordle *o, unsigned round)
     for (unsigned i = 0; i < o->words->len; ++i) {
       octordle_get_location(o, grid, round, i, &coord);
       utils_x11_color_get(&o->x11, coord.x, coord.y, &color);
-      status = wordle_map_from_color(&color, &c_right, &c_wrong, &c_discarded);
+      status = status_map_from_colors(&color, &c_right, &c_wrong, &c_discarded);
       assert(status != UNKNOWN);
       right_location += status == RIGHT ? 1 : 0;
       o->wordle[grid].current[i] = status;
-      wordle_dump_location_status(status);
+      status_dump(status);
       if (right_location == o->words->len) {
         o->solved[grid] = true;
         ++o->nr_solved;
@@ -200,7 +200,6 @@ static bool octordle_get_locations_status(struct octordle *o, unsigned round)
   }
   printf("[octordle] number of solved grid: %u\n", o->nr_solved);
   return false;
-
 }
 
 static const char* octordle_find_next_candidate(struct octordle *o, unsigned round)

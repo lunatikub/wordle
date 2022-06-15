@@ -86,6 +86,7 @@ bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
 /**
  * Asking user to set the focus on the screen and the coordinates of the mouse.
  */
-void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time);
+void utils_x11_focus(struct utils_x11 *x11, struct coord *coord,
+                     unsigned waiting_time, const char *prefix);
 
 #endif /* !__UTILS_X11__ */

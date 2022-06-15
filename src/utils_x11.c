@@ -66,14 +66,31 @@ static void utils_x11_press_key(struct utils_x11 *x11, KeyCode keycode)
 void utils_x11_write(struct utils_x11 *x11, const char *word, unsigned len)
 {
   char letter[2];
+  KeyCode keycode;
+
+#define CASE_KEYCODE(KEYCODE, LETTER)           \
+  case LETTER:                                  \
+    keycode = KEYCODE;                          \
+    break
 
   for (unsigned i = 0; i < len; ++i) {
-    letter[0] = word[i];
-    letter[1] = 0;
-    KeyCode keycode = XKeysymToKeycode(x11->display, XStringToKeysym(letter));
+    switch (word[i]) {
+      CASE_KEYCODE(86, '+');
+      CASE_KEYCODE(21, '=');
+      CASE_KEYCODE(82, '-');
+      CASE_KEYCODE(106, '/');
+      CASE_KEYCODE(63, '*');
+      default:
+        letter[0] = word[i];
+        letter[1] = 0;
+        keycode = XKeysymToKeycode(x11->display, XStringToKeysym(letter));
+        break;
+    };
     utils_x11_press_key(x11, keycode);
   }
   utils_x11_press_key(x11, 36); // return
+
+#undef CASE_KEYCODE
 }
 
 bool utils_x11_find_from(struct utils_x11 *x11, struct coord *from,
@@ -149,10 +166,11 @@ bool utils_x11_find_v_dec_from(struct utils_x11 *x11, struct coord *from,
   return false;
 }
 
-void utils_x11_focus(struct utils_x11 *x11, struct coord *coord, unsigned waiting_time)
+void utils_x11_focus(struct utils_x11 *x11, struct coord *coord,
+                     unsigned waiting_time, const char *prefix)
 {
   for (unsigned i = 0; i < waiting_time; ++i) {
-    printf("[x] %u/%u...\n", i + 1, waiting_time);
+    printf("[%s] %u/%u...\n", prefix, i + 1, waiting_time);
     sleep(1);
   }
   *coord = utils_x11_get_mouse_coordinates(x11);

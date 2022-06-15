@@ -41,6 +41,7 @@ test_inc = include_directories('tests')
 
 src = files(
   'src/color.c',
+  'src/status.c',
   'src/words.c',
   'src/wordle.c',
   'src/coord.c',

@@ -6,9 +6,11 @@
 #include "equation.h"
 #include "parser.h"
 
-/* alphabet of a nerdle equation. */
+/* Alphabet of a nerdle equation. */
 static const char alpha[] = "0123456789+-/*=";
 
+/* Map a char of the alphabet on an index.
+   Index is the position in the alphabet. */
 unsigned nerdle_map_alpha(char c)
 {
   if (c >= '0' && c <= '9') {
@@ -27,6 +29,9 @@ unsigned nerdle_map_alpha(char c)
   return 14; /* = */
 }
 
+/**
+ * Create a new candidate for the equation.
+ */
 static struct candidate* nerdle_candidate_new(const char *equation)
 {
   struct candidate *candidate = calloc(1, sizeof(*candidate));
@@ -34,6 +39,9 @@ static struct candidate* nerdle_candidate_new(const char *equation)
   return candidate;
 }
 
+/**
+ * Insert a new candidate at the head of the candidates list.
+ */
 static void nerdle_candidate_insert_head(struct nerdle *nerdle, struct candidate *candidate)
 {
   candidate->next = nerdle->candidates;
@@ -44,6 +52,9 @@ static void nerdle_candidate_insert_head(struct nerdle *nerdle, struct candidate
   ++nerdle->nr_candidate;
 }
 
+/**
+ * Remove a candidate from the candidates list.
+ */
 static void nerdle_candidate_remove(struct nerdle *nerdle, struct candidate *candidate)
 {
   if (candidate->prev == NULL) { /* head */
@@ -59,6 +70,9 @@ static void nerdle_candidate_remove(struct nerdle *nerdle, struct candidate *can
   --nerdle->nr_candidate;
 }
 
+/**
+ * Check if the character at the position is valid.
+ */
 static bool nerdle_is_valid_char(struct nerdle *nerdle, char c, unsigned position)
 {
   unsigned mapped = nerdle_map_alpha(c);
@@ -118,6 +132,19 @@ nerdle_remove_candidate_if_needed(struct nerdle *nerdle, struct candidate *candi
   return candidate->next;
 }
 
+const char* nerdle_first_equation(struct nerdle *nerdle)
+{
+  switch (nerdle->len) {
+    case 5:  return "1+2=3";
+    case 6:  return "10-2=8";
+    case 7:  return "23-19=4";
+    case 8:  return "9+8-3=14";
+    case 9:  return "20+3-8=15";
+    default:
+      assert(!"TODO");
+  }
+}
+
 void nerdle_select_equations(struct nerdle *nerdle)
 {
   struct candidate *candidate = nerdle->candidates;
@@ -162,18 +189,6 @@ const char* nerdle_find_best_equation(struct nerdle *nerdle)
   }
 
   return best_candidate;
-}
-
-const char* nerdle_first_equation(struct nerdle *nerdle)
-{
-  switch (nerdle->len) {
-    case 5:  return "1+2=3";
-    case 6:  return "10-2=8";
-    case 7:  return "23-19=4";
-    case 8:  return "9+8-3=14";
-    case 9:  return "20+3-8=15";
-  }
-  return "TODO"; /* 10, 11, 12 */
 }
 
 struct nerdle* nerdle_create(unsigned len)

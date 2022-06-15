@@ -54,7 +54,7 @@ static bool louan_set_locations(struct louan *louan)
 
   printf("[louan] set the focus (by clicking) on the tabulation...\n");
   printf("[louan] and be closest to the top left corner of the first location...\n");
-  utils_x11_focus(&louan->x11, &start_loc, 3);
+  utils_x11_focus(&louan->x11, &start_loc, 3, "louan");
 
   if (utils_x11_find_from(&louan->x11, &start_loc, &louan->first_loc, &c_first_loc) == false) {
     CANNOT_FIND_COLOR(c_first_loc);
@@ -127,13 +127,13 @@ static bool louan_get_locations_status(struct louan *l, unsigned round)
   for (unsigned i = 0; i < l->words->len; ++i) {
     louan_get_location(l, round, i, &coord);
     utils_x11_color_get(&l->x11, coord.x, coord.y, &color);
-    enum status status = wordle_map_from_color(&color, &c_right, &c_wrong, &c_discarded);
+    enum status status = status_map_from_colors(&color, &c_right, &c_wrong, &c_discarded);
     assert(status != UNKNOWN);
     if (status == RIGHT) {
       ++right_location;
     }
     l->wordle.current[i] = status;
-    wordle_dump_location_status(status);
+    status_dump(status);
   }
   printf("\n");
   if (right_location == l->words->len) {

@@ -5,13 +5,7 @@
 
 #include "words.h"
 #include "color.h"
-
-enum status {
-  UNKNOWN,
-  DISCARDED,
-  WRONG,
-  RIGHT,
-};
+#include "status.h"
 
 struct wordle {
   const struct word *words;
@@ -55,19 +49,6 @@ unsigned wordle_count_number_of_candidates(struct wordle *wordle);
  * Set the next candidate.
  */
 void wordle_set_candidate(struct wordle *wordle, const char *candidate);
-
-/**
- * Dump in color the status of a location.
- */
-void wordle_dump_location_status(enum status status);
-
-/**
- * Map a status from the color of the differents status.
- */
-enum status wordle_map_from_color(struct color *color,
-                                  const struct color *c_right,
-                                  const struct color *c_wrong,
-                                  const struct color *c_discarded);
 
 /**
  * Dump status:
