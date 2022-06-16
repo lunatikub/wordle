@@ -22,7 +22,7 @@ int main(void)
     uint64_t start = get_time_ms();
     nerdle_generate_equations(nerdle);
     uint64_t time = get_time_ms() - start;
-    printf("len: %u, nr_candidate: %u, nr_fail: %u, nr_call: %u,"
+    printf("len: %u, nr_candidate: %lu, nr_fail: %lu, nr_call: %lu,"
            " time: %lu(us), %lu(ms), %lu(s)\n",
            len, nerdle->nr_candidate, nerdle->nr_fail, nerdle->nr_call,
            time, time / 1000, time / 1000000);

@@ -1,6 +1,7 @@
 #ifndef __NERDLE__
 #define __NERDLE__
 
+#include <stdint.h>
 #include <stdbool.h>
 
 #define MIN_EQ_SZ 5
@@ -20,9 +21,9 @@ struct nerdle {
   bool discarded[ALPHA_SZ];
   bool wrong[ALPHA_SZ][MAX_EQ_SZ];
   struct candidate *candidates;
-  unsigned nr_candidate;
-  unsigned nr_fail;
-  unsigned nr_call;
+  uint64_t nr_candidate;
+  uint64_t nr_fail;
+  uint64_t nr_call;
 };
 
 /**

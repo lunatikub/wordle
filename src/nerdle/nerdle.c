@@ -7,7 +7,7 @@
 #include "parser.h"
 
 /* Alphabet of a nerdle equation. */
-static const char alpha[] = "0123456789+-/*=";
+static const char alpha[] = "1234567890+-/*=";
 
 /* Map a char of the alphabet on an index.
    Index is the position in the alphabet. */
@@ -121,8 +121,9 @@ void nerdle_generate_equations(struct nerdle *nerdle)
 {
   char str[MAX_EQ_SZ] = { 0 };
 
-  /* optimization: don't try the branchs starting by '/+-*=' */
-  for (unsigned i = 0; i < 10; ++i) {
+  /* Optimization: don't try the branchs starting by '/+-*=0'
+     Reducing the number of initial branches */
+  for (unsigned i = 0; i < 9; ++i) {
     if (nerdle_is_valid_char(nerdle, alpha[i], 0) == false) {
       continue;
     }
